@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cálculo RPV / Precatório 2026</title>
+    <title>Cálculo RPV / Precatórios 2026</title>
     <style>
         html, body {
             height: 100%;
@@ -240,6 +240,19 @@
             outline: none;
             border-color: #4a90e2;
             box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+        }
+
+        /* Nova Classe para alinhar campos lado a lado */
+        .double-field-row {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            margin-bottom: 0.8em;
+        }
+        .double-field-row .form-group, 
+        .double-field-row .results-field-group {
+            flex: 1;
+            margin-bottom: 0;
         }
 
         .author-count-group {
@@ -676,7 +689,7 @@
                 background-color: transparent;
                 box-shadow: none;
             }
-            .rra-row {
+            .rra-row, .double-field-row {
                 flex-direction: column;
                 gap: 10px;
             }
@@ -706,7 +719,7 @@
         <div id="header-left">
             <p id="digitalClock"></p>
         </div>
-        <h1 class="header-title">Cálculo RPV / Precatório</h1>
+        <h1 class="header-title">Cálculo RPV / Precatórios</h1>
         <div id="header-right">
             <p id="currentDate"></p>
         </div>
@@ -785,9 +798,16 @@
                     <label for="valorPrincipal">Valor Principal:</label>
                     <input type="text" id="valorPrincipal" name="valorPrincipal" placeholder="R$ 0,00" inputmode="numeric">
                 </div>
-                <div class="form-group">
-                    <label for="valorJuros">Valor dos Juros:</label>
-                    <input type="text" id="valorJuros" name="valorJuros" placeholder="R$ 0,00" inputmode="numeric">
+                <!-- Nova linha com Juros e SELIC lado a lado -->
+                <div class="double-field-row">
+                    <div class="form-group">
+                        <label for="valorJuros">Valor dos Juros:</label>
+                        <input type="text" id="valorJuros" name="valorJuros" placeholder="R$ 0,00" inputmode="numeric">
+                    </div>
+                    <div class="form-group">
+                        <label for="valorSelic">Valor SELIC:</label>
+                        <input type="text" id="valorSelic" name="valorSelic" placeholder="R$ 0,00" inputmode="numeric">
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="percentualAdvogado">Percentual do Advogado:</label>
@@ -846,9 +866,16 @@
                 <label for="valorPrincipalAutor">Valor principal (autor):</label>
                 <input type="text" id="valorPrincipalAutor" name="valorPrincipalAutor" placeholder="R$ 0,00" readonly>
             </div>
-            <div class="results-field-group">
-                <label for="jurosAutor">Juros (autor):</label>
-                <input type="text" id="jurosAutor" name="jurosAutor" placeholder="R$ 0,00" readonly>
+            <!-- Nova linha com Juros e SELIC do Autor lado a lado -->
+            <div class="double-field-row">
+                <div class="results-field-group">
+                    <label for="jurosAutor">Juros (autor):</label>
+                    <input type="text" id="jurosAutor" name="jurosAutor" placeholder="R$ 0,00" readonly>
+                </div>
+                <div class="results-field-group">
+                    <label for="selicAutor">Valor SELIC:</label>
+                    <input type="text" id="selicAutor" name="selicAutor" placeholder="R$ 0,00" readonly>
+                </div>
             </div>
             <div class="results-field-group">
                 <label for="totalAutor">Total (autor):</label>
@@ -860,9 +887,16 @@
                 <label for="valorPrincipalAdvogado">Valor principal (adv):</label>
                 <input type="text" id="valorPrincipalAdvogado" name="valorPrincipalAdvogado" placeholder="R$ 0,00" readonly>
             </div>
-            <div class="results-field-group">
-                <label for="jurosAdvogado">Juros (adv):</label>
-                <input type="text" id="jurosAdvogado" name="jurosAdvogado" placeholder="R$ 0,00" readonly>
+            <!-- Nova linha com Juros e SELIC do Advogado lado a lado -->
+            <div class="double-field-row">
+                <div class="results-field-group">
+                    <label for="jurosAdvogado">Juros (adv):</label>
+                    <input type="text" id="jurosAdvogado" name="jurosAdvogado" placeholder="R$ 0,00" readonly>
+                </div>
+                <div class="results-field-group">
+                    <label for="selicAdvogado">Valor SELIC:</label>
+                    <input type="text" id="selicAdvogado" name="selicAdvogado" placeholder="R$ 0,00" readonly>
+                </div>
             </div>
             <div class="results-field-group">
                 <label for="totalAdvogado">Total (adv):</label>
@@ -1199,43 +1233,51 @@
         function runCalculations() {
             const valorPrincipalInput = document.getElementById('valorPrincipal');
             const valorJurosInput = document.getElementById('valorJuros');
+            const valorSelicInput = document.getElementById('valorSelic'); // Novo Campo
             const totalInput = document.getElementById('total');
             const percentualAdvogadoStr = document.getElementById('percentualAdvogado').value;
             const valorPrincipalAdvogadoInput = document.getElementById('valorPrincipalAdvogado');
             const jurosAdvogadoInput = document.getElementById('jurosAdvogado');
+            const selicAdvogadoInput = document.getElementById('selicAdvogado'); // Novo Campo
             const totalAdvogadoInput = document.getElementById('totalAdvogado');
             const valorPrincipalAutorInput = document.getElementById('valorPrincipalAutor');
             const jurosAutorInput = document.getElementById('jurosAutor');
+            const selicAutorInput = document.getElementById('selicAutor'); // Novo Campo
             const totalAutorInput = document.getElementById('totalAutor');
             const numAutoresSelect = document.getElementById('numAutores');
             const detalhamentoModal = document.getElementById('detalhamentoModal');
 
             const valorPrincipal = parseCurrencyToNumber(valorPrincipalInput.value);
             const valorJuros = parseCurrencyToNumber(valorJurosInput.value);
+            const valorSelic = parseCurrencyToNumber(valorSelicInput.value); // Valor SELIC
             const percentualAdvogado = parseFloat(percentualAdvogadoStr.replace('%', '').replace(',', '.')) / 100 || 0;
             const numAutores = parseInt(numAutoresSelect.value) || 1;
 
-            const totalGeral = valorPrincipal + valorJuros;
+            const totalGeral = valorPrincipal + valorJuros + valorSelic; // Total inclui SELIC
             
             const vpAdvogadoBase = truncateToTwoDecimals(valorPrincipal * percentualAdvogado);
             const jAdvogadoBase = truncateToTwoDecimals(valorJuros * percentualAdvogado);
-            const totalAdvogadoBase = vpAdvogadoBase + jAdvogadoBase;
+            const selicAdvogadoBase = truncateToTwoDecimals(valorSelic * percentualAdvogado); // SELIC do Advogado
+            const totalAdvogadoBase = vpAdvogadoBase + jAdvogadoBase + selicAdvogadoBase;
             
             const vpAutorBase = valorPrincipal - vpAdvogadoBase;
             const jAutorBase = valorJuros - jAdvogadoBase;
-            const totalAutorBase = vpAutorBase + jAutorBase;
+            const selicAutorBase = valorSelic - selicAdvogadoBase; // SELIC do Autor
+            const totalAutorBase = vpAutorBase + jAutorBase + selicAutorBase;
             
             valorPrincipalAdvogadoInput.value = formatCurrency(vpAdvogadoBase);
             jurosAdvogadoInput.value = formatCurrency(jAdvogadoBase);
+            selicAdvogadoInput.value = formatCurrency(selicAdvogadoBase);
             totalAdvogadoInput.value = formatCurrency(totalAdvogadoBase);
 
             valorPrincipalAutorInput.value = formatCurrency(vpAutorBase);
             jurosAutorInput.value = formatCurrency(jAutorBase);
+            selicAutorInput.value = formatCurrency(selicAutorBase);
             totalAutorInput.value = formatCurrency(totalAutorBase);
 
             if (numAutores > 1) {
                 detalhamentoModal.classList.add('active');
-                generateDetalhamentoTable(numAutores, vpAutorBase, jAutorBase, vpAdvogadoBase, jAdvogadoBase);
+                generateDetalhamentoTable(numAutores, vpAutorBase, jAutorBase, selicAutorBase, vpAdvogadoBase, jAdvogadoBase, selicAdvogadoBase);
             } else {
                  detalhamentoModal.classList.remove('active');
             }
@@ -1264,14 +1306,14 @@
             totalInput.value = formatCurrency(totalGeral);
         }
 
-        function generateDetalhamentoTable(numAutores, vpAutorTotal, jAutorTotal, vpAdvTotal, jAdvTotal) {
+        function generateDetalhamentoTable(numAutores, vpAutorTotal, jAutorTotal, selicAutorTotal, vpAdvTotal, jAdvTotal, selicAdvTotal) {
             const contentDiv = document.getElementById('detalhamentoContent');
             
-            const [vpAutorDividido, jAutorDividido] = distributeValues(vpAutorTotal, jAutorTotal, numAutores);
-            const [vpAdvDividido, jAdvDividido] = distributeValues(vpAdvTotal, jAdvTotal, numAutores);
+            const [vpAutorDividido, jAutorDividido, selicAutorDividido] = distributeValues(vpAutorTotal, jAutorTotal, selicAutorTotal, numAutores);
+            const [vpAdvDividido, jAdvDividido, selicAdvDividido] = distributeValues(vpAdvTotal, jAdvTotal, selicAdvTotal, numAutores);
 
-            let totalAutorDividido = vpAutorDividido.map((val, index) => val + jAutorDividido[index]);
-            let totalAdvDividido = vpAdvDividido.map((val, index) => val + jAdvDividido[index]);
+            let totalAutorDividido = vpAutorDividido.map((val, index) => val + jAutorDividido[index] + selicAutorDividido[index]);
+            let totalAdvDividido = vpAdvDividido.map((val, index) => val + jAdvDividido[index] + selicAdvDividido[index]);
             
             let tableHTML = `<h3 style="color: red;">CÁLCULOS PARA OS AUTORES DA AÇÃO</h3>
                              <table>
@@ -1289,9 +1331,13 @@
             jAutorDividido.forEach(val => tableHTML += `<td>${formatCurrency(val)}</td>`);
             tableHTML += `<td>${formatCurrency(jAutorTotal)}</td></tr>`;
 
+            tableHTML += `<tr><td>SELIC</td>`;
+            selicAutorDividido.forEach(val => tableHTML += `<td>${formatCurrency(val)}</td>`);
+            tableHTML += `<td>${formatCurrency(selicAutorTotal)}</td></tr>`;
+
             tableHTML += `<tr><td>Total</td>`;
             totalAutorDividido.forEach(val => tableHTML += `<td>${formatCurrency(val)}</td>`);
-            tableHTML += `<td>${formatCurrency(vpAutorTotal + jAutorTotal)}</td></tr>`;
+            tableHTML += `<td>${formatCurrency(vpAutorTotal + jAutorTotal + selicAutorTotal)}</td></tr>`;
             
             tableHTML += `</tbody></table>`;
             
@@ -1310,10 +1356,14 @@
             tableHTML += `<tr><td>Juros</td>`;
             jAdvDividido.forEach(val => tableHTML += `<td>${formatCurrency(val)}</td>`);
             tableHTML += `<td>${formatCurrency(jAdvTotal)}</td></tr>`;
+
+            tableHTML += `<tr><td>SELIC</td>`;
+            selicAdvDividido.forEach(val => tableHTML += `<td>${formatCurrency(val)}</td>`);
+            tableHTML += `<td>${formatCurrency(selicAdvTotal)}</td></tr>`;
             
             tableHTML += `<tr><td>Total</td>`;
             totalAdvDividido.forEach(val => tableHTML += `<td>${formatCurrency(val)}</td>`);
-            tableHTML += `<td>${formatCurrency(vpAdvTotal + jAdvTotal)}</td></tr>`;
+            tableHTML += `<td>${formatCurrency(vpAdvTotal + jAdvTotal + selicAdvTotal)}</td></tr>`;
 
             tableHTML += `</tbody></table>`;
 
@@ -1350,7 +1400,7 @@
             });
         }
 
-        function distributeValues(principal, juros, numAutores) {
+        function distributeValues(principal, juros, selic, numAutores) {
             function distribute(total) {
                 if (numAutores === 0) return [];
                 
@@ -1367,13 +1417,15 @@
 
             const vpDistribuido = distribute(principal);
             const jDistribuido = distribute(juros);
+            const selicDistribuido = distribute(selic);
             
-            return [vpDistribuido, jDistribuido];
+            return [vpDistribuido, jDistribuido, selicDistribuido];
         }
 
         function clearAllFields() {
             document.getElementById('valorPrincipal').value = '';
             document.getElementById('valorJuros').value = '';
+            document.getElementById('valorSelic').value = ''; // Limpar SELIC
             document.getElementById('percentualAdvogado').value = '';
             document.getElementById('parcelasExercicioAnterior').value = '';
             document.getElementById('parcelasExercicioAtual').value = '';
@@ -1694,6 +1746,12 @@
                 runCalculations();
             });
 
+            // Listener para o novo campo SELIC
+            document.getElementById('valorSelic').addEventListener('input', function() {
+                formatInputCurrency(this);
+                runCalculations();
+            });
+
             document.getElementById('percentualAdvogado').addEventListener('input', function() {
                 formatPercentage(this);
                 runCalculations();
@@ -1963,5 +2021,4 @@
         document.getElementById('valorTotalAtual').setAttribute('readonly', 'readonly');
     </script>
 </body>
-
 </html>
