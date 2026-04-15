@@ -1126,8 +1126,8 @@
              <span class="close-modal-button">&times;</span>
              <h2>DETALHAMENTO</h2>
              <div id="detalhamentoContent"></div>
-             <div class="modal-buttons" style="margin-top: 20px;">
-                <button id="closeDetalhamentoDetailBtn" class="modal-button nao">Fechar</button>
+             <div class="modal-buttons" style="margin-top: 20px; justify-content: center;">
+                <button id="closeDetalhamentoDetailBtn" class="modal-button nao" style="flex-grow: 0; width: max-content; padding: 6px 16px;">Fechar</button>
             </div>
         </div>
     </div>
@@ -1140,6 +1140,7 @@
 
     <script>
         let iaResult = null; 
+        let isDetalhamentoClosedByUser = false; // Adicionado para controlar o estado do modal de detalhamento
         
         function parseCurrencyToNumber(valueString) {
             if (!valueString) return 0;
@@ -1276,10 +1277,14 @@
             totalAutorInput.value = formatCurrency(totalAutorBase);
 
             if (numAutores > 1) {
-                detalhamentoModal.classList.add('active');
                 generateDetalhamentoTable(numAutores, vpAutorBase, jAutorBase, selicAutorBase, vpAdvogadoBase, jAdvogadoBase, selicAdvogadoBase);
+                // O modal só abre se o usuário não tiver clicado ativamente no botão fechar anteriormente
+                if (!isDetalhamentoClosedByUser) {
+                    detalhamentoModal.classList.add('active');
+                }
             } else {
                  detalhamentoModal.classList.remove('active');
+                 isDetalhamentoClosedByUser = false; // reseta o estado
             }
             
             const parcelasAnteriores = parseInt(document.getElementById('parcelasExercicioAnterior').value) || 0;
@@ -1367,6 +1372,23 @@
 
             tableHTML += `</tbody></table>`;
 
+            let totalRpvDividido = totalAutorDividido.map((val, index) => val + totalAdvDividido[index]);
+            let totalRpvGeral = (vpAutorTotal + jAutorTotal + selicAutorTotal) + (vpAdvTotal + jAdvTotal + selicAdvTotal);
+
+            tableHTML += `<h3 style="color: red; margin-top: 20px; font-size: 1.1em;">Valor Total da RPV para cada Autor/Advogado (RRA)</h3>
+                             <table>
+                                <thead>
+                                    <tr>
+                                        <th>Valores</th>`;
+            for(let i=1; i<=numAutores; i++) { tableHTML += `<th>AUTOR + ADV ${i}</th>`; }
+            tableHTML += `<th>TOTAL GERAL</th></tr></thead><tbody>`;
+            
+            tableHTML += `<tr><td>Total RPV</td>`;
+            totalRpvDividido.forEach(val => tableHTML += `<td>${formatCurrency(val)}</td>`);
+            tableHTML += `<td>${formatCurrency(totalRpvGeral)}</td></tr>`;
+
+            tableHTML += `</tbody></table>`;
+
             contentDiv.innerHTML = tableHTML;
 
             contentDiv.querySelectorAll('td').forEach(td => {
@@ -1432,6 +1454,7 @@
             document.getElementById('valorTotalAnterior').value = '';
             document.getElementById('valorTotalAtual').value = '';
             document.getElementById('numAutores').value = '1';
+            isDetalhamentoClosedByUser = false; // Reseta a flag ao limpar
             runCalculations();
         }
         
@@ -1497,6 +1520,7 @@
                 detalhamentoModalContent.style.top = '';
                 detalhamentoModalContent.style.left = '';
                 detalhamentoModalContent.style.transform = '';
+                isDetalhamentoClosedByUser = true; // Registra que o usuário fechou o modal
             }
 
             closeDetalhamentoModal.addEventListener('click', closeAndResetDetalhamentoModal);
@@ -1767,7 +1791,11 @@
                 runCalculations();
             });
 
-            document.getElementById('numAutores').addEventListener('change', runCalculations);
+            // Modificado para resetar a variável ao mudar o número de autores e reabrir o modal
+            document.getElementById('numAutores').addEventListener('change', function() {
+                isDetalhamentoClosedByUser = false;
+                runCalculations();
+            });
             
             // --- Lógica para o novo Modal de Histórico ---
             const historicoTetoButton = document.getElementById('historicoTetoButton');
