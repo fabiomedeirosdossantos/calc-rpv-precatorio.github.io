@@ -639,47 +639,6 @@
             bottom: 50px;
         }
         
-        /* Adaptação de Tela para não gerar barra de rolagem (Desktops) */
-        @media (min-width: 1025px) {
-            html { 
-                /* O tamanho da fonte raiz muda conforme a altura da tela (vh) */
-                font-size: clamp(10px, 1.35vh, 16px); 
-            }
-            body { 
-                overflow: hidden; /* Remove barra de rolagem no desktop */
-            }
-            header { padding: 1vh 0; }
-            .header-title { font-size: clamp(1.8rem, 4vh, 2.8rem); }
-            .main-content-wrapper {
-                margin: 0.5vh auto;
-                padding: 1.5vh 2vw;
-                gap: 1.5vh;
-            }
-            .info-box, .calculator { padding: 1.5vh; }
-            .action-button { min-height: 5vh; padding: 1vh; font-size: 0.85rem;}
-            .calculator-keys button { padding: 1.5vh; }
-            .section-main-title { margin-top: 1.5vh; margin-bottom: 1vh; font-size: 1.2rem;}
-            .form-group, .double-field-row, .results-field-group { margin-bottom: 1vh; }
-            .results-field-group input, .form-group input, .form-group select { padding: 0.8vh; }
-            .info-title { margin-bottom: 1vh; font-size: 1.2rem;}
-            .info-text { margin-bottom: 0.8vh; font-size: 0.9rem;}
-        }
-
-        /* Estilo do Rodapé */
-        .app-footer {
-            text-align: center;
-            padding: 10px 15px;
-            background-color: #e0e0e0;
-            border-top: 1px solid #ccc;
-            font-size: 0.85em;
-            color: #000080;
-            font-weight: bold;
-            flex-shrink: 0;
-            width: 100%;
-            z-index: 10;
-            letter-spacing: 0.5px;
-        }
-        
         /* Ajustes para telas médias (Tablets) */
         @media (max-width: 1024px) {
             #header-left, #header-right {
@@ -1178,11 +1137,6 @@
             <p id="warningMessage"></p>
         </div>
     </div>
-
-    <!-- Novo Rodapé de Direitos Autorais -->
-    <footer class="app-footer">
-        Desenvolvedor: Fabio Medeiros dos santos - Graduado em Sistemas de Informação com MBA em Gestão de TI
-    </footer>
 
     <script>
         let iaResult = null; 
