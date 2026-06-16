@@ -270,6 +270,36 @@
             margin: 0 auto;
         }
 
+        /* Estilos para as opções SIREA / ORACLE */
+        .rra-options {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 1em;
+            background-color: #e8e8e8;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+        .rra-options label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #000080;
+            margin-bottom: 0;
+            width: auto;
+            font-size: 1.1em;
+        }
+        .rra-options input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            margin: 0;
+            cursor: pointer;
+            accent-color: #000080;
+        }
+
         .rra-fields {
             display: block;
             margin-top: 1em;
@@ -638,7 +668,7 @@
             visibility: visible;
             bottom: 50px;
         }
-        
+
         /* Ajustes para telas médias (Tablets) */
         @media (max-width: 1024px) {
             #header-left, #header-right {
@@ -819,6 +849,17 @@
                 </div>
 
                 <h3 class="section-main-title">CÁLCULO DO RRA</h3>
+                
+                <!-- Novo Bloco SIREA / ORACLE -->
+                <div class="rra-options">
+                    <label>
+                        <input type="radio" name="rraBaseType" value="ORACLE" checked> ORACLE
+                    </label>
+                    <label>
+                        <input type="radio" name="rraBaseType" value="SIREA"> SIREA
+                    </label>
+                </div>
+
                 <div id="rraFields" class="rra-fields">
                     <div class="rra-row">
                         <div class="form-group">
@@ -1291,21 +1332,19 @@
             const parcelasAtuais = parseInt(document.getElementById('parcelasExercicioAtual').value) || 0;
             const totalParcelas = parcelasAnteriores + parcelasAtuais;
             
-            if (totalParcelas > 0) {
-                 const valorTotalAnterior = parseCurrencyToNumber(document.getElementById('valorTotalAnterior').value);
-                 const valorTotalAtual = parseCurrencyToNumber(document.getElementById('valorTotalAtual').value);
-                 const totalRRAValues = valorTotalAnterior + valorTotalAtual;
-                 
-                 const totalGeralRRA = totalRRAValues > 0 ? totalRRAValues : totalGeral;
+            // Nova Lógica SIREA / ORACLE
+            const rraBaseType = document.querySelector('input[name="rraBaseType"]:checked').value;
+            const baseRRA = (rraBaseType === 'SIREA') ? totalAutorBase : totalGeral;
 
-                const resultadoAnteriorBruto = (totalGeralRRA / totalParcelas) * parcelasAnteriores;
+            if (totalParcelas > 0) {
+                const resultadoAnteriorBruto = (baseRRA / totalParcelas) * parcelasAnteriores;
                 const resultadoAnteriorFinal = truncateToTwoDecimals(resultadoAnteriorBruto);
-                const resultadoAtualFinal = totalGeralRRA - resultadoAnteriorFinal;
-                 document.getElementById('valorTotalAnterior').value = formatCurrency(resultadoAnteriorFinal);
+                const resultadoAtualFinal = baseRRA - resultadoAnteriorFinal;
+                document.getElementById('valorTotalAnterior').value = formatCurrency(resultadoAnteriorFinal);
                 document.getElementById('valorTotalAtual').value = formatCurrency(resultadoAtualFinal);
             } else {
                  document.getElementById('valorTotalAnterior').value = formatCurrency(0);
-                document.getElementById('valorTotalAtual').value = formatCurrency(0);
+                 document.getElementById('valorTotalAtual').value = formatCurrency(0);
             }
 
             totalInput.value = formatCurrency(totalGeral);
@@ -1454,6 +1493,7 @@
             document.getElementById('valorTotalAnterior').value = '';
             document.getElementById('valorTotalAtual').value = '';
             document.getElementById('numAutores').value = '1';
+            document.querySelector('input[name="rraBaseType"][value="ORACLE"]').checked = true; // Reseta opção para ORACLE
             isDetalhamentoClosedByUser = false; // Reseta a flag ao limpar
             runCalculations();
         }
@@ -1789,6 +1829,11 @@
             document.getElementById('parcelasExercicioAtual').addEventListener('input', function() {
                 formatNumericInput(this);
                 runCalculations();
+            });
+
+            // Listeners para os Radio Buttons (SIREA/ORACLE)
+            document.querySelectorAll('input[name="rraBaseType"]').forEach(radio => {
+                radio.addEventListener('change', runCalculations);
             });
 
             // Modificado para resetar a variável ao mudar o número de autores e reabrir o modal
