@@ -378,6 +378,24 @@
                 1px 1px 2px rgba(0,0,0,0.3);
         }
 
+        /* Estilo Yellow Badge para ORACLE / SIREA no modal */
+        .badge-yellow {
+            background-color: #FFD700; /* Amarelo */
+            color: #000080; /* Azul Marinho */
+            border: 1px solid #DAA520; /* Borda Dourada */
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-weight: bold;
+            font-size: 0.9em;
+            box-shadow: 
+                inset 0px 1px 1px rgba(255,255,255,0.7),
+                3px 3px 5px rgba(0,0,0,0.2);
+            text-shadow: 1px 1px 1px rgba(255,255,255,0.7);
+            text-transform: uppercase;
+            display: inline-block; /* Fica apenas no tamanho do texto */
+            width: max-content;
+        }
+
         .modal-overlay {
             display: none;
             position: fixed;
@@ -552,6 +570,7 @@
             border-collapse: collapse;
             margin-top: 15px;
             font-size: 0.9em;
+            margin-bottom: 20px;
         }
         #detalhamentoModal th, #detalhamentoModal td {
             border: 1px solid #ddd;
@@ -668,7 +687,7 @@
             visibility: visible;
             bottom: 50px;
         }
-        
+
         /* Ajustes para telas médias (Tablets) */
         @media (max-width: 1024px) {
             #header-left, #header-right {
@@ -1415,8 +1434,9 @@
             let totalRpvDividido = totalAutorDividido.map((val, index) => val + totalAdvDividido[index]);
             let totalRpvGeral = (vpAutorTotal + jAutorTotal + selicAutorTotal) + (vpAdvTotal + jAdvTotal + selicAdvTotal);
 
-            tableHTML += `<h3 style="color: red; margin-top: 20px; font-size: 1.1em; margin-bottom: 5px;">Valor Total da RPV para cada Autor/Advogado (RRA)</h3>
-                          <h4 style="color: #000080; margin-top: 0; margin-bottom: 10px; font-size: 1em; font-weight: bold; text-align: center;">ORACLE</h4>
+            // Seção ORACLE
+            tableHTML += `<h3 style="color: red; margin-top: 20px; font-size: 1.1em; margin-bottom: 15px;">Valor Total da RPV para cada Autor/Advogado (RRA)</h3>
+                          <div style="text-align: center; margin-bottom: 10px;"><span class="badge-yellow">ORACLE</span></div>
                              <table>
                                 <thead>
                                     <tr>
@@ -1427,6 +1447,23 @@
             tableHTML += `<tr><td>Total RPV</td>`;
             totalRpvDividido.forEach(val => tableHTML += `<td>${formatCurrency(val)}</td>`);
             tableHTML += `<td>${formatCurrency(totalRpvGeral)}</td></tr>`;
+
+            tableHTML += `</tbody></table>`;
+
+            // Seção SIREA (Nova Funcionalidade)
+            let totalAutorGeral = vpAutorTotal + jAutorTotal + selicAutorTotal;
+
+            tableHTML += `<div style="text-align: center; margin-top: 25px; margin-bottom: 10px;"><span class="badge-yellow">SIREA</span></div>
+                             <table style="margin-bottom: 30px;">
+                                <thead>
+                                    <tr>
+                                        <th>Valores</th>`;
+            for(let i=1; i<=numAutores; i++) { tableHTML += `<th>AUTOR ${i}</th>`; }
+            tableHTML += `<th>TOTAL GERAL</th></tr></thead><tbody>`;
+            
+            tableHTML += `<tr><td>Total RPV</td>`;
+            totalAutorDividido.forEach(val => tableHTML += `<td>${formatCurrency(val)}</td>`);
+            tableHTML += `<td>${formatCurrency(totalAutorGeral)}</td></tr>`;
 
             tableHTML += `</tbody></table>`;
 
