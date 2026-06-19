@@ -668,7 +668,7 @@
             visibility: visible;
             bottom: 50px;
         }
-
+        
         /* Ajustes para telas médias (Tablets) */
         @media (max-width: 1024px) {
             #header-left, #header-right {
@@ -1179,7 +1179,7 @@
         </div>
     </div>
 
-    <script>
+    <script type="module">
         let iaResult = null; 
         let isDetalhamentoClosedByUser = false; // Adicionado para controlar o estado do modal de detalhamento
         
@@ -1333,7 +1333,8 @@
             const totalParcelas = parcelasAnteriores + parcelasAtuais;
             
             // Nova Lógica SIREA / ORACLE
-            const rraBaseType = document.querySelector('input[name="rraBaseType"]:checked').value;
+            const rraBaseTypeElement = document.querySelector('input[name="rraBaseType"]:checked');
+            const rraBaseType = rraBaseTypeElement ? rraBaseTypeElement.value : 'ORACLE';
             const baseRRA = (rraBaseType === 'SIREA') ? totalAutorBase : totalGeral;
 
             if (totalParcelas > 0) {
@@ -1414,7 +1415,8 @@
             let totalRpvDividido = totalAutorDividido.map((val, index) => val + totalAdvDividido[index]);
             let totalRpvGeral = (vpAutorTotal + jAutorTotal + selicAutorTotal) + (vpAdvTotal + jAdvTotal + selicAdvTotal);
 
-            tableHTML += `<h3 style="color: red; margin-top: 20px; font-size: 1.1em;">Valor Total da RPV para cada Autor/Advogado (RRA)</h3>
+            tableHTML += `<h3 style="color: red; margin-top: 20px; font-size: 1.1em; margin-bottom: 5px;">Valor Total da RPV para cada Autor/Advogado (RRA)</h3>
+                          <h4 style="color: #000080; margin-top: 0; margin-bottom: 10px; font-size: 1em; font-weight: bold; text-align: center;">ORACLE</h4>
                              <table>
                                 <thead>
                                     <tr>
@@ -1493,7 +1495,10 @@
             document.getElementById('valorTotalAnterior').value = '';
             document.getElementById('valorTotalAtual').value = '';
             document.getElementById('numAutores').value = '1';
-            document.querySelector('input[name="rraBaseType"][value="ORACLE"]').checked = true; // Reseta opção para ORACLE
+            
+            const oracleRadio = document.querySelector('input[name="rraBaseType"][value="ORACLE"]');
+            if(oracleRadio) oracleRadio.checked = true; // Reseta opção para ORACLE
+            
             isDetalhamentoClosedByUser = false; // Reseta a flag ao limpar
             runCalculations();
         }
