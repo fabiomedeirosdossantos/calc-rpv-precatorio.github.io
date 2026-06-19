@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cálculo RPV / Precatórios </title>
+    <title>Calculadora RPV´s / Precatórios </title>
     <style>
         html, body {
             height: 100%;
@@ -384,7 +384,7 @@
             color: #000080; /* Azul Marinho */
             border: 1px solid #DAA520; /* Borda Dourada */
             border-radius: 8px;
-            padding: 8px 16px;
+            padding: 8px 0; /* Padding vertical, o horizontal fica por conta da largura fixa */
             font-weight: bold;
             font-size: 0.9em;
             box-shadow: 
@@ -392,8 +392,11 @@
                 3px 3px 5px rgba(0,0,0,0.2);
             text-shadow: 1px 1px 1px rgba(255,255,255,0.7);
             text-transform: uppercase;
-            display: inline-block; /* Fica apenas no tamanho do texto */
-            width: max-content;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 110px; /* LARGURA FIXA PARA ALINHAMENTO PERFEITO */
+            box-sizing: border-box;
         }
 
         .modal-overlay {
@@ -768,7 +771,7 @@
         <div id="header-left">
             <p id="digitalClock"></p>
         </div>
-        <h1 class="header-title">Cálculadora RPV´s / Precatórios</h1>
+        <h1 class="header-title">Calculadora RPV´s / Precatórios</h1>
         <div id="header-right">
             <p id="currentDate"></p>
         </div>
@@ -777,12 +780,10 @@
     <div class="main-content-wrapper">
         <div class="left-column-wrapper">
              <div class="button-container">
-                 <!-- Novo Botão solicitado -->
-                 <button id="historicoTetoButton" class="action-button red-text">TETO DO JEF ANOS ANTERIORES (2016 - 2025)</button>
-                 
+                 <button id="historicoTetoButton" class="action-button red-text">TETO DO JEF ANOS ANTERIORES (2016 - 2025)</button>                 
                  <button id="rpaTetoButton" class="action-button">CÁLCULO RPV ACIMA DO TETO</button>
                  <button id="naoTenhoJurosButton" class="action-button">NÃO TENHO O VALOR DOS JUROS (R$)</button>
-                 <button id="desagioButton" class="action-button">CÁLCULO DESÁGIO (R$):</button>
+                 <button id="desagioButton" class="action-button">CÁLCULO DESÁGIO (R$)</button>
             </div>
             <div class="left-column-content">
                 <div class="info-box"> 
@@ -1437,7 +1438,7 @@
             // Seção ORACLE com Flexbox para o badge ficar do lado esquerdo
             tableHTML += `<h3 style="color: red; margin-top: 20px; font-size: 1.1em; margin-bottom: 15px;">Valor Total da RPV para cada Autor/Advogado (RRA)</h3>
                           <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px; width: 100%;">
-                              <div style="flex-shrink: 0;"><span class="badge-yellow">ORACLE</span></div>
+                              <div style="flex-shrink: 0; width: 110px;"><span class="badge-yellow">ORACLE</span></div>
                               <div style="flex-grow: 1; overflow-x: auto;">
                                  <table style="margin-top: 0; margin-bottom: 0;">
                                     <thead>
@@ -1458,7 +1459,7 @@
             let totalAutorGeral = vpAutorTotal + jAutorTotal + selicAutorTotal;
 
             tableHTML += `<div style="display: flex; align-items: center; gap: 15px; margin-top: 25px; margin-bottom: 30px; width: 100%;">
-                              <div style="flex-shrink: 0;"><span class="badge-yellow">SIREA</span></div>
+                              <div style="flex-shrink: 0; width: 110px;"><span class="badge-yellow">SIREA</span></div>
                               <div style="flex-grow: 1; overflow-x: auto;">
                                  <table style="margin-top: 0; margin-bottom: 0;">
                                     <thead>
