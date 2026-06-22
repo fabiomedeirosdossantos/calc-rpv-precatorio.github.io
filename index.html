@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora RPV´s / Precatórios </title>
+    <title>Cálculo RPV / Precatórios 2026</title>
     <style>
         html, body {
             height: 100%;
@@ -771,7 +771,7 @@
         <div id="header-left">
             <p id="digitalClock"></p>
         </div>
-        <h1 class="header-title">Calculadora RPV´s / Precatórios</h1>
+        <h1 class="header-title">Cálculo RPV / Precatórios</h1>
         <div id="header-right">
             <p id="currentDate"></p>
         </div>
@@ -780,10 +780,12 @@
     <div class="main-content-wrapper">
         <div class="left-column-wrapper">
              <div class="button-container">
-                 <button id="historicoTetoButton" class="action-button red-text">TETO DO JEF ANOS ANTERIORES (2016 - 2025)</button>                 
+                 <!-- Novo Botão solicitado -->
+                 <button id="historicoTetoButton" class="action-button red-text">TETO DO JEF ANOS ANTERIORES (2016 - 2025)</button>
+                 
                  <button id="rpaTetoButton" class="action-button">CÁLCULO RPV ACIMA DO TETO</button>
                  <button id="naoTenhoJurosButton" class="action-button">NÃO TENHO O VALOR DOS JUROS (R$)</button>
-                 <button id="desagioButton" class="action-button">CÁLCULO DESÁGIO (R$)</button>
+                 <button id="desagioButton" class="action-button">CÁLCULO DESÁGIO (R$):</button>
             </div>
             <div class="left-column-content">
                 <div class="info-box"> 
@@ -1203,6 +1205,19 @@
         let iaResult = null; 
         let isDetalhamentoClosedByUser = false; // Adicionado para controlar o estado do modal de detalhamento
         
+        // Nova função para permitir apenas números e vírgula com até 2 casas decimais
+        window.formatDecimalInput = function(input) {
+            let value = input.value.replace(/[^0-9,]/g, '');
+            let parts = value.split(',');
+            if (parts.length > 2) {
+                value = parts[0] + ',' + parts.slice(1).join('');
+            }
+            if (parts.length === 2 && parts[1].length > 2) {
+                value = parts[0] + ',' + parts[1].substring(0, 2);
+            }
+            input.value = value;
+        };
+
         function parseCurrencyToNumber(valueString) {
             if (!valueString) return 0;
             return parseFloat(valueString.replace('R$', '').replace(/\./g, '').replace(',', '.') || '0');
@@ -1435,10 +1450,26 @@
             let totalRpvDividido = totalAutorDividido.map((val, index) => val + totalAdvDividido[index]);
             let totalRpvGeral = (vpAutorTotal + jAutorTotal + selicAutorTotal) + (vpAdvTotal + jAdvTotal + selicAdvTotal);
 
+            // Nova Seção RRA substituindo o título anterior e adicionando inputs lado a lado
+            tableHTML += `
+                <div style="display: flex; align-items: center; gap: 15px; margin-top: 20px; margin-bottom: 15px; width: 100%;">
+                    <div style="flex-shrink: 0; width: 110px; font-weight: bold; font-size: 1.4em; color: #000080; text-align: center;">RRA</div>
+                    <div style="display: flex; gap: 15px; flex-grow: 1;">
+                        <div style="display: flex; flex-direction: column; align-items: flex-start; flex: 1;">
+                            <label style="font-weight: bold; font-size: 0.85em; margin-bottom: 0.2em; color: black;">Parcelas de Exerc. Anter.:</label>
+                            <input type="text" style="width: 100%; padding: 0.5em; border: 1px solid #ccc; border-radius: 4px; font-size: 0.95em; background-color: #fff; color: #000080; font-weight: bold; box-sizing: border-box;" placeholder="0" oninput="formatDecimalInput(this)">
+                        </div>
+                        <div style="display: flex; flex-direction: column; align-items: flex-start; flex: 1;">
+                            <label style="font-weight: bold; font-size: 0.85em; margin-bottom: 0.2em; color: black;">Parcelas no Exerc. Atual:</label>
+                            <input type="text" style="width: 100%; padding: 0.5em; border: 1px solid #ccc; border-radius: 4px; font-size: 0.95em; background-color: #fff; color: #000080; font-weight: bold; box-sizing: border-box;" placeholder="0" oninput="formatDecimalInput(this)">
+                        </div>
+                    </div>
+                </div>
+            `;
+
             // Seção ORACLE com Flexbox para o badge ficar do lado esquerdo
-            tableHTML += `<h3 style="color: red; margin-top: 20px; font-size: 1.1em; margin-bottom: 15px;">Valor Total da RPV para cada Autor/Advogado (RRA)</h3>
-                          <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px; width: 100%;">
-                              <div style="flex-shrink: 0; width: 110px;"><span class="badge-yellow">ORACLE</span></div>
+            tableHTML += `<div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px; width: 100%;">
+                              <div style="flex-shrink: 0; width: 110px; text-align: center;"><span class="badge-yellow">ORACLE</span></div>
                               <div style="flex-grow: 1; overflow-x: auto;">
                                  <table style="margin-top: 0; margin-bottom: 0;">
                                     <thead>
@@ -1459,7 +1490,7 @@
             let totalAutorGeral = vpAutorTotal + jAutorTotal + selicAutorTotal;
 
             tableHTML += `<div style="display: flex; align-items: center; gap: 15px; margin-top: 25px; margin-bottom: 30px; width: 100%;">
-                              <div style="flex-shrink: 0; width: 110px;"><span class="badge-yellow">SIREA</span></div>
+                              <div style="flex-shrink: 0; width: 110px; text-align: center;"><span class="badge-yellow">SIREA</span></div>
                               <div style="flex-grow: 1; overflow-x: auto;">
                                  <table style="margin-top: 0; margin-bottom: 0;">
                                     <thead>
