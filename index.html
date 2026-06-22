@@ -1226,6 +1226,9 @@
         let iaResult = null; 
         let isDetalhamentoClosedByUser = false; // Adicionado para controlar o estado do modal de detalhamento
         
+        // Dados de RRA mantidos na janela para cálculos dinâmicos
+        window.currentModalRRAData = null;
+
         // Nova função para permitir apenas números e vírgula com até 2 casas decimais
         window.formatDecimalInput = function(input) {
             let value = input.value.replace(/[^0-9,]/g, '');
@@ -1237,6 +1240,58 @@
                 value = parts[0] + ',' + parts[1].substring(0, 2);
             }
             input.value = value;
+        };
+
+        // Nova função que recalcula e atualiza as linhas do modal em tempo real
+        window.calculateModalRRA = function() {
+            if (!window.currentModalRRAData) return;
+            
+            const data = window.currentModalRRAData;
+            const inputAnt = document.getElementById('modalRraAnt');
+            const inputAtual = document.getElementById('modalRraAtual');
+            
+            if (!inputAnt || !inputAtual) return;
+
+            // Lê as parcelas informadas convertendo de "12,50" para formato numérico
+            const parcelasAnt = parseFloat(inputAnt.value.replace(',', '.')) || 0;
+            const parcelasAtual = parseFloat(inputAtual.value.replace(',', '.')) || 0;
+            const totalParcelas = parcelasAnt + parcelasAtual;
+
+            const calcRRA = (baseValue) => {
+                if (totalParcelas === 0) return { ant: 0, atual: 0 };
+                const antBruto = (baseValue / totalParcelas) * parcelasAnt;
+                const ant = truncateToTwoDecimals(antBruto);
+                const atual = baseValue - ant;
+                return { ant, atual };
+            };
+
+            // Atualiza células ORACLE
+            for(let i=0; i < data.numAutores; i++) {
+                const vals = calcRRA(data.oracleDividido[i]);
+                const antCell = document.getElementById(`oracle-ant-${i}`);
+                const atualCell = document.getElementById(`oracle-atual-${i}`);
+                if(antCell) antCell.textContent = formatCurrency(vals.ant);
+                if(atualCell) atualCell.textContent = formatCurrency(vals.atual);
+            }
+            const oracleGeralVals = calcRRA(data.oracleGeral);
+            const oracleAntGeral = document.getElementById('oracle-ant-geral');
+            const oracleAtualGeral = document.getElementById('oracle-atual-geral');
+            if(oracleAntGeral) oracleAntGeral.textContent = formatCurrency(oracleGeralVals.ant);
+            if(oracleAtualGeral) oracleAtualGeral.textContent = formatCurrency(oracleGeralVals.atual);
+
+            // Atualiza células SIREA
+            for(let i=0; i < data.numAutores; i++) {
+                const vals = calcRRA(data.sireaDividido[i]);
+                const antCell = document.getElementById(`sirea-ant-${i}`);
+                const atualCell = document.getElementById(`sirea-atual-${i}`);
+                if(antCell) antCell.textContent = formatCurrency(vals.ant);
+                if(atualCell) atualCell.textContent = formatCurrency(vals.atual);
+            }
+            const sireaGeralVals = calcRRA(data.sireaGeral);
+            const sireaAntGeral = document.getElementById('sirea-ant-geral');
+            const sireaAtualGeral = document.getElementById('sirea-atual-geral');
+            if(sireaAntGeral) sireaAntGeral.textContent = formatCurrency(sireaGeralVals.ant);
+            if(sireaAtualGeral) sireaAtualGeral.textContent = formatCurrency(sireaGeralVals.atual);
         };
 
         function parseCurrencyToNumber(valueString) {
@@ -1388,7 +1443,7 @@
             const parcelasAtuais = parseInt(document.getElementById('parcelasExercicioAtual').value) || 0;
             const totalParcelas = parcelasAnteriores + parcelasAtuais;
             
-            // Nova Lógica SIREA / ORACLE
+            // Nova Lógica SIREA / ORACLE principal
             const rraBaseTypeElement = document.querySelector('input[name="rraBaseType"]:checked');
             const rraBaseType = rraBaseTypeElement ? rraBaseTypeElement.value : 'ORACLE';
             const baseRRA = (rraBaseType === 'SIREA') ? totalAutorBase : totalGeral;
@@ -1470,6 +1525,16 @@
 
             let totalRpvDividido = totalAutorDividido.map((val, index) => val + totalAdvDividido[index]);
             let totalRpvGeral = (vpAutorTotal + jAutorTotal + selicAutorTotal) + (vpAdvTotal + jAdvTotal + selicAdvTotal);
+            let totalAutorGeral = vpAutorTotal + jAutorTotal + selicAutorTotal;
+
+            // Salva os dados na window para uso futuro pela função dinâmica calculateModalRRA
+            window.currentModalRRAData = {
+                numAutores: numAutores,
+                oracleDividido: totalRpvDividido,
+                oracleGeral: totalRpvGeral,
+                sireaDividido: totalAutorDividido,
+                sireaGeral: totalAutorGeral
+            };
 
             // Nova Seção RRA substituindo o título anterior e adicionando inputs lado a lado alinhados
             tableHTML += `
@@ -1478,17 +1543,17 @@
                     <div style="display: flex; gap: 20px; flex-grow: 1; flex-wrap: wrap;">
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <label style="font-weight: bold; font-size: 0.85em; color: black; white-space: nowrap; margin: 0;">Parcelas de Exerc. Anter.:</label>
-                            <input type="text" style="width: 70px; padding: 0.4em; border: 1px solid #ccc; border-radius: 4px; font-size: 0.95em; background-color: #fff; color: #000080; font-weight: bold; text-align: center;" placeholder="0" oninput="formatDecimalInput(this)">
+                            <input type="text" id="modalRraAnt" style="width: 70px; padding: 0.4em; border: 1px solid #ccc; border-radius: 4px; font-size: 0.95em; background-color: #fff; color: #000080; font-weight: bold; text-align: center;" placeholder="0" oninput="formatDecimalInput(this); calculateModalRRA();">
                         </div>
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <label style="font-weight: bold; font-size: 0.85em; color: black; white-space: nowrap; margin: 0;">Parcelas no Exerc. Atual:</label>
-                            <input type="text" style="width: 70px; padding: 0.4em; border: 1px solid #ccc; border-radius: 4px; font-size: 0.95em; background-color: #fff; color: #000080; font-weight: bold; text-align: center;" placeholder="0" oninput="formatDecimalInput(this)">
+                            <input type="text" id="modalRraAtual" style="width: 70px; padding: 0.4em; border: 1px solid #ccc; border-radius: 4px; font-size: 0.95em; background-color: #fff; color: #000080; font-weight: bold; text-align: center;" placeholder="0" oninput="formatDecimalInput(this); calculateModalRRA();">
                         </div>
                     </div>
                 </div>
             `;
 
-            // Seção ORACLE com Flexbox para o badge ficar do lado esquerdo
+            // Seção ORACLE com linhas dinâmicas de rateio
             tableHTML += `<div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px; width: 100%;">
                               <div style="flex-shrink: 0; width: 110px; text-align: center;"><span class="badge-yellow">ORACLE</span></div>
                               <div style="flex-grow: 1; overflow-x: auto;">
@@ -1502,14 +1567,20 @@
             tableHTML += `<tr><td>Total RPV</td>`;
             totalRpvDividido.forEach(val => tableHTML += `<td>${formatCurrency(val)}</td>`);
             tableHTML += `<td>${formatCurrency(totalRpvGeral)}</td></tr>`;
+            
+            tableHTML += `<tr><td>Parc. Exerc. Ant.:</td>`;
+            totalRpvDividido.forEach((val, i) => tableHTML += `<td id="oracle-ant-${i}">R$ 0,00</td>`);
+            tableHTML += `<td id="oracle-ant-geral">R$ 0,00</td></tr>`;
+            
+            tableHTML += `<tr><td>Parc. Exerc. Atual:</td>`;
+            totalRpvDividido.forEach((val, i) => tableHTML += `<td id="oracle-atual-${i}">R$ 0,00</td>`);
+            tableHTML += `<td id="oracle-atual-geral">R$ 0,00</td></tr>`;
 
             tableHTML += `</tbody></table>
                               </div>
                           </div>`;
 
-            // Seção SIREA com Flexbox para o badge ficar do lado esquerdo
-            let totalAutorGeral = vpAutorTotal + jAutorTotal + selicAutorTotal;
-
+            // Seção SIREA com linhas dinâmicas de rateio
             tableHTML += `<div style="display: flex; align-items: center; gap: 15px; margin-top: 25px; margin-bottom: 30px; width: 100%;">
                               <div style="flex-shrink: 0; width: 110px; text-align: center;"><span class="badge-yellow">SIREA</span></div>
                               <div style="flex-grow: 1; overflow-x: auto;">
@@ -1524,12 +1595,21 @@
             totalAutorDividido.forEach(val => tableHTML += `<td>${formatCurrency(val)}</td>`);
             tableHTML += `<td>${formatCurrency(totalAutorGeral)}</td></tr>`;
 
+            tableHTML += `<tr><td>Parc. Exerc. Ant.:</td>`;
+            totalAutorDividido.forEach((val, i) => tableHTML += `<td id="sirea-ant-${i}">R$ 0,00</td>`);
+            tableHTML += `<td id="sirea-ant-geral">R$ 0,00</td></tr>`;
+            
+            tableHTML += `<tr><td>Parc. Exerc. Atual:</td>`;
+            totalAutorDividido.forEach((val, i) => tableHTML += `<td id="sirea-atual-${i}">R$ 0,00</td>`);
+            tableHTML += `<td id="sirea-atual-geral">R$ 0,00</td></tr>`;
+
             tableHTML += `</tbody></table>
                               </div>
                           </div>`;
 
             contentDiv.innerHTML = tableHTML;
 
+            // Associa evento de clique para copiar conteúdo das células
             contentDiv.querySelectorAll('td').forEach(td => {
                 td.addEventListener('mousedown', (event) => {
                     const field = event.target;
@@ -1559,6 +1639,9 @@
                     }
                 });
             });
+            
+            // Invoca a função para o caso de já haver parcelas (por ex: recálculo por clique fora do modal)
+            window.calculateModalRRA();
         }
 
         function distributeValues(principal, juros, selic, numAutores) {
