@@ -399,6 +399,27 @@
             box-sizing: border-box;
         }
 
+        /* Estilo Blue Badge para o RRA no modal */
+        .badge-blue {
+            background-color: #ADD8E6; /* Azul claro do botão */
+            color: #000080; /* Azul Marinho */
+            border: 1px solid #90B0C0; /* Borda alinhada com o botão */
+            border-radius: 8px;
+            padding: 8px 0;
+            font-weight: bold;
+            font-size: 0.9em;
+            box-shadow: 
+                inset 0px 1px 1px rgba(255,255,255,0.7),
+                3px 3px 5px rgba(0,0,0,0.2);
+            text-shadow: 1px 1px 1px rgba(255,255,255,0.7);
+            text-transform: uppercase;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 110px; /* LARGURA FIXA PARA ALINHAMENTO PERFEITO com ORACLE/SIREA */
+            box-sizing: border-box;
+        }
+
         .modal-overlay {
             display: none;
             position: fixed;
@@ -1450,18 +1471,18 @@
             let totalRpvDividido = totalAutorDividido.map((val, index) => val + totalAdvDividido[index]);
             let totalRpvGeral = (vpAutorTotal + jAutorTotal + selicAutorTotal) + (vpAdvTotal + jAdvTotal + selicAdvTotal);
 
-            // Nova Seção RRA substituindo o título anterior e adicionando inputs lado a lado
+            // Nova Seção RRA substituindo o título anterior e adicionando inputs lado a lado alinhados
             tableHTML += `
                 <div style="display: flex; align-items: center; gap: 15px; margin-top: 20px; margin-bottom: 15px; width: 100%;">
-                    <div style="flex-shrink: 0; width: 110px; font-weight: bold; font-size: 1.4em; color: #000080; text-align: center;">RRA</div>
-                    <div style="display: flex; gap: 15px; flex-grow: 1;">
-                        <div style="display: flex; flex-direction: column; align-items: flex-start; flex: 1;">
-                            <label style="font-weight: bold; font-size: 0.85em; margin-bottom: 0.2em; color: black;">Parcelas de Exerc. Anter.:</label>
-                            <input type="text" style="width: 100%; padding: 0.5em; border: 1px solid #ccc; border-radius: 4px; font-size: 0.95em; background-color: #fff; color: #000080; font-weight: bold; box-sizing: border-box;" placeholder="0" oninput="formatDecimalInput(this)">
+                    <div style="flex-shrink: 0; width: 110px; text-align: center;"><span class="badge-blue">RRA</span></div>
+                    <div style="display: flex; gap: 20px; flex-grow: 1; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <label style="font-weight: bold; font-size: 0.85em; color: black; white-space: nowrap; margin: 0;">Parcelas de Exerc. Anter.:</label>
+                            <input type="text" style="width: 70px; padding: 0.4em; border: 1px solid #ccc; border-radius: 4px; font-size: 0.95em; background-color: #fff; color: #000080; font-weight: bold; text-align: center;" placeholder="0" oninput="formatDecimalInput(this)">
                         </div>
-                        <div style="display: flex; flex-direction: column; align-items: flex-start; flex: 1;">
-                            <label style="font-weight: bold; font-size: 0.85em; margin-bottom: 0.2em; color: black;">Parcelas no Exerc. Atual:</label>
-                            <input type="text" style="width: 100%; padding: 0.5em; border: 1px solid #ccc; border-radius: 4px; font-size: 0.95em; background-color: #fff; color: #000080; font-weight: bold; box-sizing: border-box;" placeholder="0" oninput="formatDecimalInput(this)">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <label style="font-weight: bold; font-size: 0.85em; color: black; white-space: nowrap; margin: 0;">Parcelas no Exerc. Atual:</label>
+                            <input type="text" style="width: 70px; padding: 0.4em; border: 1px solid #ccc; border-radius: 4px; font-size: 0.95em; background-color: #fff; color: #000080; font-weight: bold; text-align: center;" placeholder="0" oninput="formatDecimalInput(this)">
                         </div>
                     </div>
                 </div>
