@@ -274,8 +274,10 @@
         .rra-options {
             display: flex;
             justify-content: center;
+            align-items: center;
             gap: 30px;
             margin-bottom: 1em;
+            margin-top: 1.5em; /* Espaçamento ajustado */
             background-color: #e8e8e8;
             padding: 12px;
             border-radius: 6px;
@@ -399,7 +401,7 @@
             box-sizing: border-box;
         }
 
-        /* Estilo Blue Badge para o RRA no modal */
+        /* Estilo Blue Badge para o RRA no modal e aba inicial */
         .badge-blue {
             background-color: #ADD8E6; /* Azul claro do botão */
             color: #000080; /* Azul Marinho */
@@ -801,7 +803,6 @@
     <div class="main-content-wrapper">
         <div class="left-column-wrapper">
              <div class="button-container">
-                 <!-- Novo Botão solicitado -->
                  <button id="historicoTetoButton" class="action-button red-text">TETO DO JEF ANOS ANTERIORES (2016 - 2025)</button>
                  
                  <button id="rpaTetoButton" class="action-button">CÁLCULO RPV ACIMA DO TETO</button>
@@ -871,7 +872,6 @@
                     <label for="valorPrincipal">Valor Principal:</label>
                     <input type="text" id="valorPrincipal" name="valorPrincipal" placeholder="R$ 0,00" inputmode="numeric">
                 </div>
-                <!-- Nova linha com Juros e SELIC lado a lado -->
                 <div class="double-field-row">
                     <div class="form-group">
                         <label for="valorJuros">Valor dos Juros:</label>
@@ -891,10 +891,9 @@
                     <input type="text" id="total" name="total" placeholder="R$ 0,00" readonly>
                 </div>
 
-                <h3 class="section-main-title">CÁLCULO DO RRA</h3>
-                
-                <!-- Novo Bloco SIREA / ORACLE -->
-                <div class="rra-options">
+                <!-- Novo Bloco SIREA / ORACLE com Badge RRA -->
+                <div class="rra-options" style="margin-top: 25px;">
+                    <span class="badge-blue" style="margin-right: 15px;">RRA</span>
                     <label>
                         <input type="radio" name="rraBaseType" value="ORACLE" checked> ORACLE
                     </label>
@@ -950,7 +949,6 @@
                 <label for="valorPrincipalAutor">Valor principal (autor):</label>
                 <input type="text" id="valorPrincipalAutor" name="valorPrincipalAutor" placeholder="R$ 0,00" readonly>
             </div>
-            <!-- Nova linha com Juros e SELIC do Autor lado a lado -->
             <div class="double-field-row">
                 <div class="results-field-group">
                     <label for="jurosAutor">Juros (autor):</label>
@@ -971,7 +969,6 @@
                 <label for="valorPrincipalAdvogado">Valor principal (adv):</label>
                 <input type="text" id="valorPrincipalAdvogado" name="valorPrincipalAdvogado" placeholder="R$ 0,00" readonly>
             </div>
-            <!-- Nova linha com Juros e SELIC do Advogado lado a lado -->
             <div class="double-field-row">
                 <div class="results-field-group">
                     <label for="jurosAdvogado">Juros (adv):</label>
@@ -1169,10 +1166,6 @@
                 <label for="desagioPercentual">Percentual de Deságio(%):</label>
                 <input type="text" id="desagioPercentual" placeholder="0%">
             </div>
-            <div class="modal-buttons">
-                <button id="calculateDesagioButton" class="action-button">Calcular</button>
-                <button id="clearDesagioButton" class="modal-button nao">Limpar dados</button>
-            </div>
             <hr>
             <div class="results-field-group">
                 <label for="desagioResultadoPrincipal">Valor Principal após deságio (R$):</label>
@@ -1198,9 +1191,10 @@
                     <input type="text" id="desagioValorJurosCalculado" readonly placeholder="R$ 0,00">
                 </div>
             </div>
-            <div class="modal-buttons">
-                 <button id="copyDesagioButton" class="modal-button copiar" disabled>Copiar Dados</button>
-                 <button id="closeDesagioButton" class="modal-button nao">Fechar</button>
+            <div class="modal-buttons" style="flex-wrap: wrap;">
+                 <button id="clearDesagioButton" class="modal-button nao" style="flex-grow: 0; width: max-content; padding: 10px 20px;">Limpar dados</button>
+                 <button id="copyDesagioButton" class="modal-button copiar" disabled style="flex-grow: 0; width: max-content; padding: 10px 20px;">Copiar Dados</button>
+                 <button id="closeDesagioButton" class="modal-button nao" style="flex-grow: 0; width: max-content; padding: 10px 20px;">Fechar</button>
             </div>
         </div>
     </div>
@@ -1882,7 +1876,6 @@
             const desagioButton = document.getElementById('desagioButton');
             const desagioModal = document.getElementById('desagioModal');
 
-            const calculateDesagioButton = document.getElementById('calculateDesagioButton');
             const clearDesagioButton = document.getElementById('clearDesagioButton');
             const copyDesagioButton = document.getElementById('copyDesagioButton');
             const closeDesagioButton = document.getElementById('closeDesagioButton');
@@ -1913,7 +1906,8 @@
             }
             clearDesagioButton.addEventListener('click', clearDesagioModalFields);
 
-            calculateDesagioButton.addEventListener('click', () => {
+            // Nova função para cálculo automático do Deságio
+            function calculateDesagio() {
                 const principal = parseCurrencyToNumber(desagioValorPrincipalInput.value);
                 const juros = parseCurrencyToNumber(desagioValorJurosInput.value);
                 const percentualStr = desagioPercentualInput.value;
@@ -1932,8 +1926,12 @@
                 desagioValorPrincipalCalculadoInput.value = formatCurrency(desagioPrincipal);
                 desagioValorJurosCalculadoInput.value = formatCurrency(desagioJuros);
 
-                copyDesagioButton.disabled = false;
-            });
+                if (principal > 0 || juros > 0) {
+                    copyDesagioButton.disabled = false;
+                } else {
+                    copyDesagioButton.disabled = true;
+                }
+            }
 
             copyDesagioButton.addEventListener('click', () => {
                 document.getElementById('valorPrincipal').value = desagioResultadoPrincipalInput.value;
@@ -1943,9 +1941,9 @@
             });
 
 
-            desagioValorPrincipalInput.addEventListener('input', function() { formatInputCurrency(this); });
-            desagioValorJurosInput.addEventListener('input', function() { formatInputCurrency(this); });
-            desagioPercentualInput.addEventListener('input', function() { formatPercentage(this); });
+            desagioValorPrincipalInput.addEventListener('input', function() { formatInputCurrency(this); calculateDesagio(); });
+            desagioValorJurosInput.addEventListener('input', function() { formatInputCurrency(this); calculateDesagio(); });
+            desagioPercentualInput.addEventListener('input', function() { formatPercentage(this); calculateDesagio(); });
 
             document.getElementById('rpaValorTotal').addEventListener('input', function() { formatInputCurrency(this); });
             document.getElementById('rpaValorJuros').addEventListener('input', function() { formatInputCurrency(this); });
