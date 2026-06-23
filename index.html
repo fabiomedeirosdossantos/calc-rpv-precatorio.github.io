@@ -255,6 +255,22 @@
             margin-bottom: 0;
         }
 
+        /* Nova Classe para alinhar Labels e Inputs lado a lado (RRA) */
+        .form-group.rra-inline-group {
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+        }
+        .form-group.rra-inline-group label {
+            width: auto;
+            margin-bottom: 0;
+            white-space: nowrap;
+        }
+        .form-group.rra-inline-group input {
+            flex: 1;
+            width: 100%;
+        }
+
         .author-count-group {
             text-align: center;
             font-size: 0.9em;
@@ -768,6 +784,12 @@
                 flex-direction: column;
                 gap: 10px;
             }
+            .form-group.rra-inline-group {
+                gap: 5px;
+            }
+            .form-group.rra-inline-group label {
+                font-size: 0.8em;
+            }
             .button-container {
                 grid-template-columns: 1fr;
                 gap: 10px;
@@ -872,6 +894,7 @@
                     <label for="valorPrincipal">Valor Principal:</label>
                     <input type="text" id="valorPrincipal" name="valorPrincipal" placeholder="R$ 0,00" inputmode="numeric">
                 </div>
+                <!-- Nova linha com Juros e SELIC lado a lado -->
                 <div class="double-field-row">
                     <div class="form-group">
                         <label for="valorJuros">Valor dos Juros:</label>
@@ -904,21 +927,21 @@
 
                 <div id="rraFields" class="rra-fields">
                     <div class="rra-row">
-                        <div class="form-group">
-                            <label for="parcelasExercicioAnterior">Nº de parcelas de exercícios anteriores:</label>
+                        <div class="form-group rra-inline-group">
+                            <label for="parcelasExercicioAnterior">Parc. Exerc. Ant.:</label>
                             <input type="text" id="parcelasExercicioAnterior" name="parcelasExercicioAnterior" placeholder="0" inputmode="numeric">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group rra-inline-group">
                             <label for="valorTotalAnterior">Valor Total:</label>
                             <input type="text" id="valorTotalAnterior" name="valorTotalAnterior" placeholder="R$ 0,00" readonly>
                         </div>
                     </div>
                     <div class="rra-row">
-                        <div class="form-group">
-                            <label for="parcelasExercicioAtual">Nº de parcelas no exercício atual:</label>
+                        <div class="form-group rra-inline-group">
+                            <label for="parcelasExercicioAtual">Parc. Exerc. Atual:</label>
                             <input type="text" id="parcelasExercicioAtual" name="parcelasExercicioAtual" placeholder="0" inputmode="numeric">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group rra-inline-group">
                             <label for="valorTotalAtual">Valor Total:</label>
                             <input type="text" id="valorTotalAtual" name="valorTotalAtual" placeholder="R$ 0,00" readonly>
                         </div>
@@ -949,6 +972,7 @@
                 <label for="valorPrincipalAutor">Valor principal (autor):</label>
                 <input type="text" id="valorPrincipalAutor" name="valorPrincipalAutor" placeholder="R$ 0,00" readonly>
             </div>
+            <!-- Nova linha com Juros e SELIC do Autor lado a lado -->
             <div class="double-field-row">
                 <div class="results-field-group">
                     <label for="jurosAutor">Juros (autor):</label>
@@ -969,6 +993,7 @@
                 <label for="valorPrincipalAdvogado">Valor principal (adv):</label>
                 <input type="text" id="valorPrincipalAdvogado" name="valorPrincipalAdvogado" placeholder="R$ 0,00" readonly>
             </div>
+            <!-- Nova linha com Juros e SELIC do Advogado lado a lado -->
             <div class="double-field-row">
                 <div class="results-field-group">
                     <label for="jurosAdvogado">Juros (adv):</label>
