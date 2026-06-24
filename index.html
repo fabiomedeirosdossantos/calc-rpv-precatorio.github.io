@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora RPV´s / Precatórios</title>
+    <title>Cálculo RPV / Precatórios 2026</title>
     <style>
         html, body {
             height: 100%;
@@ -255,7 +255,7 @@
             margin-bottom: 0;
         }
 
-        /* Nova Classe para alinhar Labels e Inputs lado a lado (RRA) */
+        /* Classe para alinhar Labels e Inputs lado a lado (RRA) */
         .form-group.rra-inline-group {
             flex-direction: row;
             align-items: center;
@@ -356,7 +356,7 @@
             border-radius: 8px;
             padding: 12px 10px;
             font-weight: bold;
-            font-size: 0.85em; /* Ligeiramente menor para caber melhor */
+            font-size: 0.85em;
             cursor: pointer;
             box-shadow: 
                 inset 0px 1px 1px rgba(255,255,255,0.7),
@@ -368,12 +368,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 60px; /* Altura mínima para uniformidade */
-            flex-grow: 1; /* Garante que ocupe o espaço disponível */
+            min-height: 60px;
+            flex-grow: 1;
         }
         
         .action-button.red-text {
-            color: #d32f2f; /* Vermelho mais elegante */
+            color: #d32f2f;
         }
 
         .action-button:hover:not(:disabled) {
@@ -396,32 +396,11 @@
                 1px 1px 2px rgba(0,0,0,0.3);
         }
 
-        /* Estilo Yellow Badge para ORACLE / SIREA no modal */
+        /* Estilo Yellow Badge para ORACLE / SIREA e Tabelas Iniciais no modal */
         .badge-yellow {
-            background-color: #FFD700; /* Amarelo */
-            color: #000080; /* Azul Marinho */
-            border: 1px solid #DAA520; /* Borda Dourada */
-            border-radius: 8px;
-            padding: 8px 0; /* Padding vertical, o horizontal fica por conta da largura fixa */
-            font-weight: bold;
-            font-size: 0.9em;
-            box-shadow: 
-                inset 0px 1px 1px rgba(255,255,255,0.7),
-                3px 3px 5px rgba(0,0,0,0.2);
-            text-shadow: 1px 1px 1px rgba(255,255,255,0.7);
-            text-transform: uppercase;
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            width: 110px; /* LARGURA FIXA PARA ALINHAMENTO PERFEITO */
-            box-sizing: border-box;
-        }
-
-        /* Estilo Blue Badge para o RRA no modal e aba inicial */
-        .badge-blue {
-            background-color: #ADD8E6; /* Azul claro do botão */
-            color: #000080; /* Azul Marinho */
-            border: 1px solid #90B0C0; /* Borda alinhada com o botão */
+            background-color: #FFD700;
+            color: #000080;
+            border: 1px solid #DAA520;
             border-radius: 8px;
             padding: 8px 0;
             font-weight: bold;
@@ -434,7 +413,28 @@
             display: inline-flex;
             justify-content: center;
             align-items: center;
-            width: 110px; /* LARGURA FIXA PARA ALINHAMENTO PERFEITO com ORACLE/SIREA */
+            width: 110px;
+            box-sizing: border-box;
+        }
+
+        /* Estilo Blue Badge para o RRA no modal e aba inicial */
+        .badge-blue {
+            background-color: #ADD8E6;
+            color: #000080;
+            border: 1px solid #90B0C0;
+            border-radius: 8px;
+            padding: 8px 0;
+            font-weight: bold;
+            font-size: 0.9em;
+            box-shadow: 
+                inset 0px 1px 1px rgba(255,255,255,0.7),
+                3px 3px 5px rgba(0,0,0,0.2);
+            text-shadow: 1px 1px 1px rgba(255,255,255,0.7);
+            text-transform: uppercase;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 110px;
             box-sizing: border-box;
         }
 
@@ -466,11 +466,10 @@
             animation: modalFadeIn 0.3s ease-out;
         }
         
-        /* Estilo Específico para o Modal de Histórico */
         .modal-content-historic {
-            background-color: #f4f4f4; /* Cinza claro moderno */
-            color: #000080; /* Azul Marinho */
-            max-width: 700px; /* Mais largo para caber a tabela */
+            background-color: #f4f4f4;
+            color: #000080;
+            max-width: 700px;
         }
         
         .historic-table-container {
@@ -509,7 +508,6 @@
         .historic-table tr:hover {
             background-color: #dceefc;
         }
-
 
         @keyframes modalFadeIn {
             from { opacity: 0; transform: translateY(-20px); }
@@ -706,7 +704,6 @@
              box-shadow: 3px 3px 6px rgba(0,0,0,0.2);
         }
 
-
         .toast-message {
             position: fixed;
             bottom: 30px;
@@ -816,7 +813,7 @@
         <div id="header-left">
             <p id="digitalClock"></p>
         </div>
-        <h1 class="header-title">Calculadora RPV´s / Precatórios</h1>
+        <h1 class="header-title">Cálculo RPV / Precatórios</h1>
         <div id="header-right">
             <p id="currentDate"></p>
         </div>
@@ -886,7 +883,7 @@
 
         <div class="form-section">
             <div class="button-container">
-                 <button id="clearButton" class="action-button">APAGAR DADOS INSERIDOS</button>
+                 <button id="clearButton" class="action-button">LIMPAR DADOS</button>
             </div>
             <h3 class="section-main-title">DADOS INICIAIS</h3>
             <form>
@@ -894,7 +891,6 @@
                     <label for="valorPrincipal">Valor Principal:</label>
                     <input type="text" id="valorPrincipal" name="valorPrincipal" placeholder="R$ 0,00" inputmode="numeric">
                 </div>
-                <!-- Nova linha com Juros e SELIC lado a lado -->
                 <div class="double-field-row">
                     <div class="form-group">
                         <label for="valorJuros">Valor dos Juros:</label>
@@ -914,7 +910,6 @@
                     <input type="text" id="total" name="total" placeholder="R$ 0,00" readonly>
                 </div>
 
-                <!-- Novo Bloco SIREA / ORACLE com Badge RRA -->
                 <div class="rra-options" style="margin-top: 25px;">
                     <span class="badge-blue" style="margin-right: 15px;">RRA</span>
                     <label>
@@ -972,7 +967,6 @@
                 <label for="valorPrincipalAutor">Valor principal (autor):</label>
                 <input type="text" id="valorPrincipalAutor" name="valorPrincipalAutor" placeholder="R$ 0,00" readonly>
             </div>
-            <!-- Nova linha com Juros e SELIC do Autor lado a lado -->
             <div class="double-field-row">
                 <div class="results-field-group">
                     <label for="jurosAutor">Juros (autor):</label>
@@ -993,7 +987,6 @@
                 <label for="valorPrincipalAdvogado">Valor principal (adv):</label>
                 <input type="text" id="valorPrincipalAdvogado" name="valorPrincipalAdvogado" placeholder="R$ 0,00" readonly>
             </div>
-            <!-- Nova linha com Juros e SELIC do Advogado lado a lado -->
             <div class="double-field-row">
                 <div class="results-field-group">
                     <label for="jurosAdvogado">Juros (adv):</label>
@@ -1021,7 +1014,7 @@
         </div>
     </div>
 
-    <!-- Novo Modal de Histórico de Tetos -->
+    <!-- Modal de Histórico de Tetos -->
     <div id="historicoModal" class="modal-overlay">
         <div class="modal-content modal-content-historic">
             <span class="close-modal-button">&times;</span>
@@ -1227,7 +1220,7 @@
     <div id="detalhamentoModal" class="modal-overlay">
         <div class="modal-content modal-content-large">
              <span class="close-modal-button">&times;</span>
-             <h2>DETALHAMENTO</h2>
+             <h2>CÁLCULOS DETALHADOS</h2>
              <div id="detalhamentoContent"></div>
              <div class="modal-buttons" style="margin-top: 20px; justify-content: center;">
                 <button id="closeDetalhamentoDetailBtn" class="modal-button nao" style="flex-grow: 0; width: max-content; padding: 6px 16px;">Fechar</button>
@@ -1243,12 +1236,10 @@
 
     <script type="module">
         let iaResult = null; 
-        let isDetalhamentoClosedByUser = false; // Adicionado para controlar o estado do modal de detalhamento
+        let isDetalhamentoClosedByUser = false; 
         
-        // Dados de RRA mantidos na janela para cálculos dinâmicos
         window.currentModalRRAData = null;
 
-        // Nova função para permitir apenas números e vírgula com até 2 casas decimais
         window.formatDecimalInput = function(input) {
             let value = input.value.replace(/[^0-9,]/g, '');
             let parts = value.split(',');
@@ -1261,7 +1252,6 @@
             input.value = value;
         };
 
-        // Nova função que recalcula e atualiza as linhas do modal em tempo real
         window.calculateModalRRA = function() {
             if (!window.currentModalRRAData) return;
             
@@ -1271,7 +1261,6 @@
             
             if (!inputAnt || !inputAtual) return;
 
-            // Lê as parcelas informadas convertendo de "12,50" para formato numérico
             const parcelasAnt = parseFloat(inputAnt.value.replace(',', '.')) || 0;
             const parcelasAtual = parseFloat(inputAtual.value.replace(',', '.')) || 0;
             const totalParcelas = parcelasAnt + parcelasAtual;
@@ -1284,7 +1273,6 @@
                 return { ant, atual };
             };
 
-            // Atualiza células ORACLE
             for(let i=0; i < data.numAutores; i++) {
                 const vals = calcRRA(data.oracleDividido[i]);
                 const antCell = document.getElementById(`oracle-ant-${i}`);
@@ -1298,7 +1286,6 @@
             if(oracleAntGeral) oracleAntGeral.textContent = formatCurrency(oracleGeralVals.ant);
             if(oracleAtualGeral) oracleAtualGeral.textContent = formatCurrency(oracleGeralVals.atual);
 
-            // Atualiza células SIREA
             for(let i=0; i < data.numAutores; i++) {
                 const vals = calcRRA(data.sireaDividido[i]);
                 const antCell = document.getElementById(`sirea-ant-${i}`);
@@ -1405,36 +1392,36 @@
         function runCalculations() {
             const valorPrincipalInput = document.getElementById('valorPrincipal');
             const valorJurosInput = document.getElementById('valorJuros');
-            const valorSelicInput = document.getElementById('valorSelic'); // Novo Campo
+            const valorSelicInput = document.getElementById('valorSelic'); 
             const totalInput = document.getElementById('total');
             const percentualAdvogadoStr = document.getElementById('percentualAdvogado').value;
             const valorPrincipalAdvogadoInput = document.getElementById('valorPrincipalAdvogado');
             const jurosAdvogadoInput = document.getElementById('jurosAdvogado');
-            const selicAdvogadoInput = document.getElementById('selicAdvogado'); // Novo Campo
+            const selicAdvogadoInput = document.getElementById('selicAdvogado'); 
             const totalAdvogadoInput = document.getElementById('totalAdvogado');
             const valorPrincipalAutorInput = document.getElementById('valorPrincipalAutor');
             const jurosAutorInput = document.getElementById('jurosAutor');
-            const selicAutorInput = document.getElementById('selicAutor'); // Novo Campo
+            const selicAutorInput = document.getElementById('selicAutor'); 
             const totalAutorInput = document.getElementById('totalAutor');
             const numAutoresSelect = document.getElementById('numAutores');
             const detalhamentoModal = document.getElementById('detalhamentoModal');
 
             const valorPrincipal = parseCurrencyToNumber(valorPrincipalInput.value);
             const valorJuros = parseCurrencyToNumber(valorJurosInput.value);
-            const valorSelic = parseCurrencyToNumber(valorSelicInput.value); // Valor SELIC
+            const valorSelic = parseCurrencyToNumber(valorSelicInput.value); 
             const percentualAdvogado = parseFloat(percentualAdvogadoStr.replace('%', '').replace(',', '.')) / 100 || 0;
             const numAutores = parseInt(numAutoresSelect.value) || 1;
 
-            const totalGeral = valorPrincipal + valorJuros + valorSelic; // Total inclui SELIC
+            const totalGeral = valorPrincipal + valorJuros + valorSelic; 
             
             const vpAdvogadoBase = truncateToTwoDecimals(valorPrincipal * percentualAdvogado);
             const jAdvogadoBase = truncateToTwoDecimals(valorJuros * percentualAdvogado);
-            const selicAdvogadoBase = truncateToTwoDecimals(valorSelic * percentualAdvogado); // SELIC do Advogado
+            const selicAdvogadoBase = truncateToTwoDecimals(valorSelic * percentualAdvogado); 
             const totalAdvogadoBase = vpAdvogadoBase + jAdvogadoBase + selicAdvogadoBase;
             
             const vpAutorBase = valorPrincipal - vpAdvogadoBase;
             const jAutorBase = valorJuros - jAdvogadoBase;
-            const selicAutorBase = valorSelic - selicAdvogadoBase; // SELIC do Autor
+            const selicAutorBase = valorSelic - selicAdvogadoBase; 
             const totalAutorBase = vpAutorBase + jAutorBase + selicAutorBase;
             
             valorPrincipalAdvogadoInput.value = formatCurrency(vpAdvogadoBase);
@@ -1449,20 +1436,18 @@
 
             if (numAutores > 1) {
                 generateDetalhamentoTable(numAutores, vpAutorBase, jAutorBase, selicAutorBase, vpAdvogadoBase, jAdvogadoBase, selicAdvogadoBase);
-                // O modal só abre se o usuário não tiver clicado ativamente no botão fechar anteriormente
                 if (!isDetalhamentoClosedByUser) {
                     detalhamentoModal.classList.add('active');
                 }
             } else {
                  detalhamentoModal.classList.remove('active');
-                 isDetalhamentoClosedByUser = false; // reseta o estado
+                 isDetalhamentoClosedByUser = false; 
             }
             
             const parcelasAnteriores = parseInt(document.getElementById('parcelasExercicioAnterior').value) || 0;
             const parcelasAtuais = parseInt(document.getElementById('parcelasExercicioAtual').value) || 0;
             const totalParcelas = parcelasAnteriores + parcelasAtuais;
             
-            // Nova Lógica SIREA / ORACLE principal
             const rraBaseTypeElement = document.querySelector('input[name="rraBaseType"]:checked');
             const rraBaseType = rraBaseTypeElement ? rraBaseTypeElement.value : 'ORACLE';
             const baseRRA = (rraBaseType === 'SIREA') ? totalAutorBase : totalGeral;
@@ -1490,11 +1475,13 @@
             let totalAutorDividido = vpAutorDividido.map((val, index) => val + jAutorDividido[index] + selicAutorDividido[index]);
             let totalAdvDividido = vpAdvDividido.map((val, index) => val + jAdvDividido[index] + selicAdvDividido[index]);
             
-            let tableHTML = `<h3 style="color: red;">CÁLCULOS PARA OS AUTORES DA AÇÃO</h3>
-                             <table>
-                                <thead>
-                                    <tr>
-                                        <th>Valores</th>`;
+            let tableHTML = `<div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px; width: 100%;">
+                              <div style="flex-shrink: 0; width: 110px; text-align: center;"><span class="badge-yellow">AUTORES</span></div>
+                              <div style="flex-grow: 1; overflow-x: auto;">
+                                 <table style="margin-top: 0; margin-bottom: 0;">
+                                    <thead>
+                                        <tr>
+                                            <th>Valores</th>`;
             for(let i=1; i<=numAutores; i++) { tableHTML += `<th>AUTOR ${i}</th>`; }
             tableHTML += `<th>TOTAL AUTOR</th></tr></thead><tbody>`;
 
@@ -1514,13 +1501,17 @@
             totalAutorDividido.forEach(val => tableHTML += `<td>${formatCurrency(val)}</td>`);
             tableHTML += `<td>${formatCurrency(vpAutorTotal + jAutorTotal + selicAutorTotal)}</td></tr>`;
             
-            tableHTML += `</tbody></table>`;
+            tableHTML += `</tbody></table>
+                              </div>
+                          </div>`;
             
-            tableHTML += `<h3 style="color: red;">CÁLCULOS PARA O(S) ADVOGADO(S)</h3>
-                             <table>
-                                <thead>
-                                    <tr>
-                                        <th>Valores</th>`;
+            tableHTML += `<div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px; width: 100%;">
+                              <div style="flex-shrink: 0; width: 110px; text-align: center;"><span class="badge-yellow">ADVOGADO(S)</span></div>
+                              <div style="flex-grow: 1; overflow-x: auto;">
+                                 <table style="margin-top: 0; margin-bottom: 0;">
+                                    <thead>
+                                        <tr>
+                                            <th>Valores</th>`;
             for(let i=1; i<=numAutores; i++) { tableHTML += `<th>ADVOGADO ${i}</th>`; }
             tableHTML += `<th>TOTAL ADV</th></tr></thead><tbody>`;
             
@@ -1540,13 +1531,14 @@
             totalAdvDividido.forEach(val => tableHTML += `<td>${formatCurrency(val)}</td>`);
             tableHTML += `<td>${formatCurrency(vpAdvTotal + jAdvTotal + selicAdvTotal)}</td></tr>`;
 
-            tableHTML += `</tbody></table>`;
+            tableHTML += `</tbody></table>
+                              </div>
+                          </div>`;
 
             let totalRpvDividido = totalAutorDividido.map((val, index) => val + totalAdvDividido[index]);
             let totalRpvGeral = (vpAutorTotal + jAutorTotal + selicAutorTotal) + (vpAdvTotal + jAdvTotal + selicAdvTotal);
             let totalAutorGeral = vpAutorTotal + jAutorTotal + selicAutorTotal;
 
-            // Salva os dados na window para uso futuro pela função dinâmica calculateModalRRA
             window.currentModalRRAData = {
                 numAutores: numAutores,
                 oracleDividido: totalRpvDividido,
@@ -1555,7 +1547,6 @@
                 sireaGeral: totalAutorGeral
             };
 
-            // Nova Seção RRA substituindo o título anterior e adicionando inputs lado a lado alinhados
             tableHTML += `
                 <div style="display: flex; align-items: center; gap: 15px; margin-top: 20px; margin-bottom: 15px; width: 100%;">
                     <div style="flex-shrink: 0; width: 110px; text-align: center;"><span class="badge-blue">RRA</span></div>
@@ -1572,7 +1563,6 @@
                 </div>
             `;
 
-            // Seção ORACLE com linhas dinâmicas de rateio
             tableHTML += `<div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px; width: 100%;">
                               <div style="flex-shrink: 0; width: 110px; text-align: center;"><span class="badge-yellow">ORACLE</span></div>
                               <div style="flex-grow: 1; overflow-x: auto;">
@@ -1599,7 +1589,6 @@
                               </div>
                           </div>`;
 
-            // Seção SIREA com linhas dinâmicas de rateio
             tableHTML += `<div style="display: flex; align-items: center; gap: 15px; margin-top: 25px; margin-bottom: 30px; width: 100%;">
                               <div style="flex-shrink: 0; width: 110px; text-align: center;"><span class="badge-yellow">SIREA</span></div>
                               <div style="flex-grow: 1; overflow-x: auto;">
@@ -1628,7 +1617,6 @@
 
             contentDiv.innerHTML = tableHTML;
 
-            // Associa evento de clique para copiar conteúdo das células
             contentDiv.querySelectorAll('td').forEach(td => {
                 td.addEventListener('mousedown', (event) => {
                     const field = event.target;
@@ -1659,7 +1647,6 @@
                 });
             });
             
-            // Invoca a função para o caso de já haver parcelas (por ex: recálculo por clique fora do modal)
             window.calculateModalRRA();
         }
 
@@ -1688,7 +1675,7 @@
         function clearAllFields() {
             document.getElementById('valorPrincipal').value = '';
             document.getElementById('valorJuros').value = '';
-            document.getElementById('valorSelic').value = ''; // Limpar SELIC
+            document.getElementById('valorSelic').value = ''; 
             document.getElementById('percentualAdvogado').value = '';
             document.getElementById('parcelasExercicioAnterior').value = '';
             document.getElementById('parcelasExercicioAtual').value = '';
@@ -1697,9 +1684,9 @@
             document.getElementById('numAutores').value = '1';
             
             const oracleRadio = document.querySelector('input[name="rraBaseType"][value="ORACLE"]');
-            if(oracleRadio) oracleRadio.checked = true; // Reseta opção para ORACLE
+            if(oracleRadio) oracleRadio.checked = true; 
             
-            isDetalhamentoClosedByUser = false; // Reseta a flag ao limpar
+            isDetalhamentoClosedByUser = false; 
             runCalculations();
         }
         
@@ -1765,7 +1752,7 @@
                 detalhamentoModalContent.style.top = '';
                 detalhamentoModalContent.style.left = '';
                 detalhamentoModalContent.style.transform = '';
-                isDetalhamentoClosedByUser = true; // Registra que o usuário fechou o modal
+                isDetalhamentoClosedByUser = true; 
             }
 
             closeDetalhamentoModal.addEventListener('click', closeAndResetDetalhamentoModal);
@@ -1931,7 +1918,6 @@
             }
             clearDesagioButton.addEventListener('click', clearDesagioModalFields);
 
-            // Nova função para cálculo automático do Deságio
             function calculateDesagio() {
                 const principal = parseCurrencyToNumber(desagioValorPrincipalInput.value);
                 const juros = parseCurrencyToNumber(desagioValorJurosInput.value);
@@ -2019,7 +2005,6 @@
                 runCalculations();
             });
 
-            // Listener para o novo campo SELIC
             document.getElementById('valorSelic').addEventListener('input', function() {
                 formatInputCurrency(this);
                 runCalculations();
@@ -2040,18 +2025,15 @@
                 runCalculations();
             });
 
-            // Listeners para os Radio Buttons (SIREA/ORACLE)
             document.querySelectorAll('input[name="rraBaseType"]').forEach(radio => {
                 radio.addEventListener('change', runCalculations);
             });
 
-            // Modificado para resetar a variável ao mudar o número de autores e reabrir o modal
             document.getElementById('numAutores').addEventListener('change', function() {
                 isDetalhamentoClosedByUser = false;
                 runCalculations();
             });
             
-            // --- Lógica para o novo Modal de Histórico ---
             const historicoTetoButton = document.getElementById('historicoTetoButton');
             const historicoModal = document.getElementById('historicoModal');
             const closeHistoricoButton = document.getElementById('closeHistoricoButton');
@@ -2071,8 +2053,6 @@
             historicoModal.addEventListener('click', (e) => {
                 if (e.target === historicoModal) closeHistorico();
             });
-            // ----------------------------------------------
-
 
             function updateDigitalClock() {
                 const clockElement = document.getElementById('digitalClock');
