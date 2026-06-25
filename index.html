@@ -356,7 +356,7 @@
             border-radius: 8px;
             padding: 12px 10px;
             font-weight: bold;
-            font-size: 0.85em;
+            font-size: 0.85em; /* Ligeiramente menor para caber melhor */
             cursor: pointer;
             box-shadow: 
                 inset 0px 1px 1px rgba(255,255,255,0.7),
@@ -368,12 +368,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 60px;
-            flex-grow: 1;
+            min-height: 60px; /* Altura mínima para uniformidade */
+            flex-grow: 1; /* Garante que ocupe o espaço disponível */
         }
         
         .action-button.red-text {
-            color: #d32f2f;
+            color: #d32f2f; /* Vermelho mais elegante */
         }
 
         .action-button:hover:not(:disabled) {
@@ -398,11 +398,11 @@
 
         /* Estilo Yellow Badge para ORACLE / SIREA e Tabelas Iniciais no modal */
         .badge-yellow {
-            background-color: #FFD700;
-            color: #000080;
-            border: 1px solid #DAA520;
+            background-color: #FFD700; /* Amarelo */
+            color: #000080; /* Azul Marinho */
+            border: 1px solid #DAA520; /* Borda Dourada */
             border-radius: 8px;
-            padding: 8px 0;
+            padding: 8px 0; /* Padding vertical, o horizontal fica por conta da largura fixa */
             font-weight: bold;
             font-size: 0.9em;
             box-shadow: 
@@ -413,15 +413,15 @@
             display: inline-flex;
             justify-content: center;
             align-items: center;
-            width: 110px;
+            width: 110px; /* LARGURA FIXA PARA ALINHAMENTO PERFEITO */
             box-sizing: border-box;
         }
 
         /* Estilo Blue Badge para o RRA no modal e aba inicial */
         .badge-blue {
-            background-color: #ADD8E6;
-            color: #000080;
-            border: 1px solid #90B0C0;
+            background-color: #ADD8E6; /* Azul claro do botão */
+            color: #000080; /* Azul Marinho */
+            border: 1px solid #90B0C0; /* Borda alinhada com o botão */
             border-radius: 8px;
             padding: 8px 0;
             font-weight: bold;
@@ -434,7 +434,7 @@
             display: inline-flex;
             justify-content: center;
             align-items: center;
-            width: 110px;
+            width: 110px; /* LARGURA FIXA PARA ALINHAMENTO PERFEITO com ORACLE/SIREA */
             box-sizing: border-box;
         }
 
@@ -466,10 +466,11 @@
             animation: modalFadeIn 0.3s ease-out;
         }
         
+        /* Estilo Específico para o Modal de Histórico */
         .modal-content-historic {
-            background-color: #f4f4f4;
-            color: #000080;
-            max-width: 700px;
+            background-color: #f4f4f4; /* Cinza claro moderno */
+            color: #000080; /* Azul Marinho */
+            max-width: 700px; /* Mais largo para caber a tabela */
         }
         
         .historic-table-container {
@@ -508,6 +509,7 @@
         .historic-table tr:hover {
             background-color: #dceefc;
         }
+
 
         @keyframes modalFadeIn {
             from { opacity: 0; transform: translateY(-20px); }
@@ -1267,6 +1269,9 @@
 
             const calcRRA = (baseValue) => {
                 if (totalParcelas === 0) return { ant: 0, atual: 0 };
+                if (parcelasAtual === 0) return { ant: baseValue, atual: 0 };
+                if (parcelasAnt === 0) return { ant: 0, atual: baseValue };
+                
                 const antBruto = (baseValue / totalParcelas) * parcelasAnt;
                 const ant = truncateToTwoDecimals(antBruto);
                 const atual = baseValue - ant;
@@ -1453,9 +1458,21 @@
             const baseRRA = (rraBaseType === 'SIREA') ? totalAutorBase : totalGeral;
 
             if (totalParcelas > 0) {
-                const resultadoAnteriorBruto = (baseRRA / totalParcelas) * parcelasAnteriores;
-                const resultadoAnteriorFinal = truncateToTwoDecimals(resultadoAnteriorBruto);
-                const resultadoAtualFinal = baseRRA - resultadoAnteriorFinal;
+                let resultadoAnteriorFinal = 0;
+                let resultadoAtualFinal = 0;
+                
+                if (parcelasAtuais === 0) {
+                    resultadoAnteriorFinal = baseRRA;
+                    resultadoAtualFinal = 0;
+                } else if (parcelasAnteriores === 0) {
+                    resultadoAnteriorFinal = 0;
+                    resultadoAtualFinal = baseRRA;
+                } else {
+                    const resultadoAnteriorBruto = (baseRRA / totalParcelas) * parcelasAnteriores;
+                    resultadoAnteriorFinal = truncateToTwoDecimals(resultadoAnteriorBruto);
+                    resultadoAtualFinal = baseRRA - resultadoAnteriorFinal;
+                }
+                
                 document.getElementById('valorTotalAnterior').value = formatCurrency(resultadoAnteriorFinal);
                 document.getElementById('valorTotalAtual').value = formatCurrency(resultadoAtualFinal);
             } else {
