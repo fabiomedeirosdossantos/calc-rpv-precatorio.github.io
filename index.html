@@ -3,13 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora RPV´s / Precatórios</title>
+    <title>Cálculo RPV / Precatórios 2026</title>
+    
+    <!-- Importação de Bibliotecas para Gerar PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
     <style>
         html, body {
             height: 100%;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Arial, sans-serif;
             box-sizing: border-box;
             overflow-x: hidden;
         }
@@ -33,7 +38,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
         .header-title {
             font-size: clamp(2em, 5vw, 2.8em);
@@ -82,13 +86,12 @@
             justify-content: center;
             align-items: flex-start;
             width: 98%;
-            margin: 10px auto;
+            margin: 2px auto;
             gap: 15px;
             padding: 15px;
             border: 1px solid #ccc;
             border-radius: 8px;
             background-color: #f9f9f9;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
 
         .left-column-wrapper, .form-section, .results-section {
@@ -108,7 +111,7 @@
             background-color: #ADD8E6;
             border: 1px solid #90B0C0;
             border-radius: 8px;
-            padding: 15px;
+            padding: 10px;
             box-shadow: 
                 4px 4px 0px rgba(0, 0, 0, 0.2),
                 8px 8px 10px rgba(0, 0, 0, 0.15),
@@ -144,8 +147,6 @@
             margin-top: 1.5em;
             margin-bottom: 1em;
             width: 100%;
-            text-transform: uppercase;
-            letter-spacing: 1px;
         }
         .form-section .section-main-title:first-of-type {
             margin-top: 0.5em;
@@ -176,18 +177,13 @@
         }
         .results-field-group input {
             width: 100%;
-            padding: 0.6em;
-            border: 1px solid #ccc;
+            padding: 0.5em;
+            border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 1em;
             background-color: #fff;
             color: #000080;
             font-weight: bold;
-            transition: border-color 0.3s;
-        }
-        .results-field-group input:focus {
-            outline: none;
-            border-color: #000080;
         }
 
         .info-title {
@@ -202,73 +198,37 @@
         .info-text {
             color: #00008B;
             text-align: justify;
-            line-height: 1.5;
+            line-height: 1.4;
             margin-bottom: 0.6em;
             font-size: clamp(0.85em, 2.5vw, 0.95em);
             font-weight: bold;
         }
         .info-text strong {
             color: #00008B;
-            text-decoration: underline;
         }
         
         .form-group {
-            margin-bottom: 1em;
+            margin-bottom: 0.8em;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
         }
         .form-group label {
-            margin-bottom: 0.3em;
+            margin-bottom: 0.2em;
             font-weight: bold;
             width: 100%;
-            color: #333;
+            color: black;
         }
         .form-group input,
         .form-group select {
             width: 100%;
-            padding: 0.6em;
-            border: 1px solid #ccc;
+            padding: 0.5em;
+            border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 0.95em;
             background-color: #fff;
             color: #000080;
             font-weight: bold;
-            transition: border-color 0.3s, box-shadow 0.3s;
-        }
-        .form-group input:focus, .form-group select:focus {
-            outline: none;
-            border-color: #4a90e2;
-            box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
-        }
-
-        /* Nova Classe para alinhar campos lado a lado */
-        .double-field-row {
-            display: flex;
-            gap: 15px;
-            width: 100%;
-            margin-bottom: 0.8em;
-        }
-        .double-field-row .form-group, 
-        .double-field-row .results-field-group {
-            flex: 1;
-            margin-bottom: 0;
-        }
-
-        /* Classe para alinhar Labels e Inputs lado a lado (RRA) */
-        .form-group.rra-inline-group {
-            flex-direction: row;
-            align-items: center;
-            gap: 10px;
-        }
-        .form-group.rra-inline-group label {
-            width: auto;
-            margin-bottom: 0;
-            white-space: nowrap;
-        }
-        .form-group.rra-inline-group input {
-            flex: 1;
-            width: 100%;
         }
 
         .author-count-group {
@@ -286,43 +246,11 @@
             margin: 0 auto;
         }
 
-        /* Estilos para as opções SIREA / ORACLE */
-        .rra-options {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 30px;
-            margin-bottom: 1em;
-            margin-top: 1.5em; /* Espaçamento ajustado */
-            background-color: #e8e8e8;
-            padding: 12px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-        }
-        .rra-options label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            color: #000080;
-            margin-bottom: 0;
-            width: auto;
-            font-size: 1.1em;
-        }
-        .rra-options input[type="radio"] {
-            width: 20px;
-            height: 20px;
-            margin: 0;
-            cursor: pointer;
-            accent-color: #000080;
-        }
-
         .rra-fields {
             display: block;
-            margin-top: 1em;
-            padding-top: 1em;
-            border-top: 1px dashed #aaa;
+            margin-top: 0.8em;
+            padding-top: 0.8em;
+            border-top: 1px dashed #ddd;
         }
 
         .rra-row {
@@ -336,17 +264,11 @@
         }
 
         .button-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            justify-content: center;
-            gap: 12px;
-            margin-bottom: 1.5em;
-        }
-
-        /* Override específico para o botão de apagar na seção de formulário */
-        .form-section .button-container {
             display: flex;
+            flex-direction: column;
             justify-content: center;
+            gap: 10px;
+            margin-bottom: 1.5em;
         }
 
         .action-button {
@@ -354,31 +276,17 @@
             color: #000080;
             border: 1px solid #90B0C0;
             border-radius: 8px;
-            padding: 12px 10px;
+            padding: 10px 20px;
             font-weight: bold;
-            font-size: 0.85em; /* Ligeiramente menor para caber melhor */
+            font-size: 0.9em;
             cursor: pointer;
             box-shadow: 
                 inset 0px 1px 1px rgba(255,255,255,0.7),
                 3px 3px 5px rgba(0,0,0,0.2);
             text-shadow: 1px 1px 1px rgba(255,255,255,0.7);
             transition: all 0.1s ease-in-out;
+            flex-grow: 1;
             text-align: center;
-            text-transform: uppercase;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 60px; /* Altura mínima para uniformidade */
-            flex-grow: 1; /* Garante que ocupe o espaço disponível */
-        }
-        
-        .action-button.red-text {
-            color: #d32f2f; /* Vermelho mais elegante */
-        }
-
-        .action-button:hover:not(:disabled) {
-            filter: brightness(105%);
-            transform: translateY(-1px);
         }
         .action-button:disabled {
             background-color: #a9a9a9;
@@ -396,48 +304,6 @@
                 1px 1px 2px rgba(0,0,0,0.3);
         }
 
-        /* Estilo Yellow Badge para ORACLE / SIREA e Tabelas Iniciais no modal */
-        .badge-yellow {
-            background-color: #FFD700; /* Amarelo */
-            color: #000080; /* Azul Marinho */
-            border: 1px solid #DAA520; /* Borda Dourada */
-            border-radius: 8px;
-            padding: 8px 0; /* Padding vertical, o horizontal fica por conta da largura fixa */
-            font-weight: bold;
-            font-size: 0.9em;
-            box-shadow: 
-                inset 0px 1px 1px rgba(255,255,255,0.7),
-                3px 3px 5px rgba(0,0,0,0.2);
-            text-shadow: 1px 1px 1px rgba(255,255,255,0.7);
-            text-transform: uppercase;
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            width: 110px; /* LARGURA FIXA PARA ALINHAMENTO PERFEITO */
-            box-sizing: border-box;
-        }
-
-        /* Estilo Blue Badge para o RRA no modal e aba inicial */
-        .badge-blue {
-            background-color: #ADD8E6; /* Azul claro do botão */
-            color: #000080; /* Azul Marinho */
-            border: 1px solid #90B0C0; /* Borda alinhada com o botão */
-            border-radius: 8px;
-            padding: 8px 0;
-            font-weight: bold;
-            font-size: 0.9em;
-            box-shadow: 
-                inset 0px 1px 1px rgba(255,255,255,0.7),
-                3px 3px 5px rgba(0,0,0,0.2);
-            text-shadow: 1px 1px 1px rgba(255,255,255,0.7);
-            text-transform: uppercase;
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            width: 110px; /* LARGURA FIXA PARA ALINHAMENTO PERFEITO com ORACLE/SIREA */
-            box-sizing: border-box;
-        }
-
         .modal-overlay {
             display: none;
             position: fixed;
@@ -446,7 +312,6 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(2px);
             justify-content: center;
             align-items: center;
             z-index: 1000;
@@ -457,65 +322,13 @@
         .modal-content {
             background-color: #fff;
             padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             text-align: center;
             width: 90%;
             max-width: 450px;
             position: relative;
-            animation: modalFadeIn 0.3s ease-out;
         }
-        
-        /* Estilo Específico para o Modal de Histórico */
-        .modal-content-historic {
-            background-color: #f4f4f4; /* Cinza claro moderno */
-            color: #000080; /* Azul Marinho */
-            max-width: 700px; /* Mais largo para caber a tabela */
-        }
-        
-        .historic-table-container {
-            max-height: 60vh;
-            overflow-y: auto;
-            border-radius: 8px;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-        }
-
-        .historic-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.95em;
-        }
-        .historic-table th {
-            background-color: #000080;
-            color: white;
-            padding: 12px;
-            position: sticky;
-            top: 0;
-            font-weight: bold;
-            text-transform: uppercase;
-            font-size: 0.85em;
-            letter-spacing: 0.5px;
-        }
-        .historic-table td {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-            color: #000080;
-            font-weight: 500;
-        }
-        .historic-table tr:nth-child(even) {
-            background-color: #e8e8e8;
-        }
-        .historic-table tr:hover {
-            background-color: #dceefc;
-        }
-
-
-        @keyframes modalFadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
         .modal-content-large {
             max-width: fit-content;
             max-height: 90vh;
@@ -525,14 +338,13 @@
             margin-top: 0;
             color: #000080;
             font-size: 1.4em;
-            margin-bottom: 1em;
         }
         .modal-content h3 {
             font-size: 1.2em;
             margin-top: 1em;
         }
         .modal-content p {
-            font-size: 1.1em;
+            font-size: 1.2em;
             color: #333;
             margin-top: 0;
             margin-bottom: 20px;
@@ -551,26 +363,23 @@
             flex: 1;
         }
         .modal-button {
-            padding: 12px 24px;
+            padding: 10px 20px;
             border: none;
-            border-radius: 6px;
+            border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
-            transition: all 0.2s;
+            transition: opacity 0.2s, background-color 0.2s;
             flex-grow: 1;
-            font-size: 0.95em;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         .modal-button:hover:not(:disabled) {
-            opacity: 0.9;
-            transform: translateY(-1px);
+            opacity: 0.8;
         }
         .modal-button.sim {
-            background-color: #2e7d32;
+            background-color: #28a745;
             color: white;
         }
         .modal-button.nao {
-            background-color: #c62828;
+            background-color: #dc3545;
             color: white;
         }
         .modal-button.copiar {
@@ -585,17 +394,16 @@
         
         .close-modal-button {
             position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 30px;
+            top: 10px;
+            right: 15px;
+            font-size: 28px;
             font-weight: bold;
             color: #aaa;
             cursor: pointer;
-            line-height: 0.8;
-            transition: color 0.2s;
+            line-height: 1;
         }
         .close-modal-button:hover {
-            color: #c62828;
+            color: #333;
         }
         .modal-content hr {
             border: 0;
@@ -612,7 +420,6 @@
             border-collapse: collapse;
             margin-top: 15px;
             font-size: 0.9em;
-            margin-bottom: 20px;
         }
         #detalhamentoModal th, #detalhamentoModal td {
             border: 1px solid #ddd;
@@ -635,20 +442,17 @@
             flex: 1;
             min-width: 250px;
             max-width: 300px;
-            background-color: #e0e0e0;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 
-                8px 8px 16px #bebebe, 
-                -8px -8px 16px #ffffff;
+            background-color: #f0f0f0;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
         .calculator-display-container {
             background-color: #fff;
             border: 1px solid #ccc;
-            border-radius: 8px;
+            border-radius: 5px;
             padding: 10px;
-            margin-bottom: 20px;
-            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
         }
         .calculator-history {
             width: 100%;
@@ -671,39 +475,40 @@
         .calculator-keys {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
+            gap: 10px;
         }
         .calculator-keys button {
             padding: 15px;
-            border-radius: 8px;
-            border: none;
-            background-color: #f0f0f0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background-color: #fff;
             font-size: 1.2em;
             cursor: pointer;
-            box-shadow: 
-                3px 3px 6px #bebebe, 
-                -3px -3px 6px #ffffff;
-            transition: all 0.1s;
-            color: #333;
-            font-weight: bold;
+            transition: background-color 0.2s;
         }
-        .calculator-keys button:active {
-            box-shadow: inset 2px 2px 5px #bebebe, inset -2px -2px 5px #ffffff;
+        .calculator-keys button:hover {
+            background-color: #e9e9e9;
         }
         .calculator-keys .operator {
             background-color: #f9a825;
             color: white;
-            box-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+        }
+        .calculator-keys .operator:hover {
+            background-color: #fbc02d;
         }
         .calculator-keys .equal-sign {
             background-color: #43a047;
             color: white;
-             box-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+        }
+         .calculator-keys .equal-sign:hover {
+            background-color: #66bb6a;
         }
         .calculator-keys .clear {
             background-color: #e53935;
             color: white;
-             box-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+        }
+        .calculator-keys .clear:hover {
+            background-color: #ef5350;
         }
 
         .toast-message {
@@ -713,14 +518,13 @@
             transform: translateX(-50%);
             background-color: #333;
             color: #fff;
-            padding: 12px 25px;
-            border-radius: 30px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            padding: 12px 20px;
+            border-radius: 25px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
             z-index: 2000;
             opacity: 0;
             visibility: hidden;
-            transition: all 0.5s;
-            font-weight: bold;
+            transition: opacity 0.5s, bottom 0.5s, visibility 0.5s;
         }
 
         .toast-message.show {
@@ -728,24 +532,45 @@
             visibility: visible;
             bottom: 50px;
         }
+        
+        .spinner {
+          border: 4px solid rgba(0, 0, 0, 0.1);
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          border-left-color: #09f;
+          animation: spin 1s ease infinite;
+          margin: 15px auto;
+          display: none;
+        }
 
-        /* Ajustes para telas médias (Tablets) */
+        @keyframes spin {
+          0% {
+            transform: rotate(0deg);
+          }
+          100% {
+            transform: rotate(360deg);
+          }
+        }
+
+
         @media (max-width: 1024px) {
             #header-left, #header-right {
                 display: none;
             }
             .main-content-wrapper {
                 flex-direction: column;
-                width: 94%;
+                width: 90%;
                 padding: 10px;
-                gap: 20px;
+                margin-top: 5px;
+                margin-bottom: 10px;
+                gap: 10px;
             }
             .left-column-wrapper, .form-section, .results-section {
                 max-width: 100%;
-                padding: 0;
+                padding: 10px 0;
                 border: none;
                 border-bottom: 1px solid #eee;
-                padding-bottom: 20px;
             }
             .left-column-content {
                 flex-direction: column;
@@ -754,10 +579,22 @@
             .results-section {
                 border-bottom: none;
             }
+            .form-section {
+                padding-top: 10px;
+            }
+            .form-group, .results-field-group {
+                align-items: stretch;
+            }
+            .section-main-title {
+                margin-top: 1em;
+            }
             .info-box {
-                width: 100%;
-                box-shadow: none;
-                border: 1px solid #ccc;
+                box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+                transform: none;
+            }
+            .info-box:hover {
+                transform: none;
+                box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
             }
             .modal-content-large {
                 width: 95%;
@@ -765,7 +602,6 @@
             }
         }
 
-        /* Ajustes para telas pequenas (Celulares) */
         @media (max-width: 600px) {
             header {
                 padding: 0.5em 10px;
@@ -774,39 +610,42 @@
                 font-size: clamp(1.4em, 6vw, 2em);
             }
             .main-content-wrapper {
-                width: 100%;
-                border: none;
-                background-color: transparent;
-                box-shadow: none;
+                width: 95%;
+                padding: 5px;
+                gap: 8px;
+                margin-top: 2px;
+                margin-bottom: 5px;
             }
-            .rra-row, .double-field-row {
+            .rra-row, .button-container {
                 flex-direction: column;
-                gap: 10px;
-            }
-            .form-group.rra-inline-group {
-                gap: 5px;
-            }
-            .form-group.rra-inline-group label {
-                font-size: 0.8em;
-            }
-            .button-container {
-                grid-template-columns: 1fr;
-                gap: 10px;
+                gap: 0.6em;
+                align-items: stretch;
             }
             .left-column-wrapper, .form-section, .results-section {
-                background-color: #fff;
-                padding: 15px;
-                border-radius: 8px;
-                box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-                margin-bottom: 10px;
+                padding: 5px 0;
+                min-width: unset;
             }
-            .calculator {
-                width: 100%;
-                max-width: 100%;
+            .info-title {
+                font-size: clamp(1em, 4.5vw, 1.2em);
             }
-             .calculator-keys button {
-                padding: 20px; 
-             }
+            .info-text {
+                font-size: clamp(0.75em, 3.5vw, 0.85em);
+            }
+            .form-group {
+                margin-bottom: 0.6em;
+            }
+            .form-group label {
+                margin-bottom: 0.1em;
+            }
+            .form-group input,
+            .form-group select,
+            .results-field-group input {
+                padding: 0.3em;
+                font-size: 0.9em;
+            }
+            .section-main-title {
+                font-size: 1.1em;
+            }
         }
     </style>
 </head>
@@ -815,7 +654,7 @@
         <div id="header-left">
             <p id="digitalClock"></p>
         </div>
-        <h1 class="header-title">Calculadora RPV´s / Precatórios</h1>
+        <h1 class="header-title">Cálculo RPV / Precatórios</h1>
         <div id="header-right">
             <p id="currentDate"></p>
         </div>
@@ -824,8 +663,6 @@
     <div class="main-content-wrapper">
         <div class="left-column-wrapper">
              <div class="button-container">
-                 <button id="historicoTetoButton" class="action-button red-text">TETO DO JEF ANOS ANTERIORES (2016 - 2025)</button>
-                 
                  <button id="rpaTetoButton" class="action-button">CÁLCULO RPV ACIMA DO TETO</button>
                  <button id="naoTenhoJurosButton" class="action-button">NÃO TENHO O VALOR DOS JUROS (R$)</button>
                  <button id="desagioButton" class="action-button">CÁLCULO DESÁGIO (R$):</button>
@@ -893,15 +730,9 @@
                     <label for="valorPrincipal">Valor Principal:</label>
                     <input type="text" id="valorPrincipal" name="valorPrincipal" placeholder="R$ 0,00" inputmode="numeric">
                 </div>
-                <div class="double-field-row">
-                    <div class="form-group">
-                        <label for="valorJuros">Valor dos Juros:</label>
-                        <input type="text" id="valorJuros" name="valorJuros" placeholder="R$ 0,00" inputmode="numeric">
-                    </div>
-                    <div class="form-group">
-                        <label for="valorSelic">Valor SELIC:</label>
-                        <input type="text" id="valorSelic" name="valorSelic" placeholder="R$ 0,00" inputmode="numeric">
-                    </div>
+                <div class="form-group">
+                    <label for="valorJuros">Valor dos Juros:</label>
+                    <input type="text" id="valorJuros" name="valorJuros" placeholder="R$ 0,00" inputmode="numeric">
                 </div>
                 <div class="form-group">
                     <label for="percentualAdvogado">Percentual do Advogado:</label>
@@ -912,33 +743,24 @@
                     <input type="text" id="total" name="total" placeholder="R$ 0,00" readonly>
                 </div>
 
-                <div class="rra-options" style="margin-top: 25px;">
-                    <span class="badge-blue" style="margin-right: 15px;">RRA</span>
-                    <label>
-                        <input type="radio" name="rraBaseType" value="ORACLE" checked> ORACLE
-                    </label>
-                    <label>
-                        <input type="radio" name="rraBaseType" value="SIREA"> SIREA
-                    </label>
-                </div>
-
+                <h3 class="section-main-title">CÁLCULO DO RRA</h3>
                 <div id="rraFields" class="rra-fields">
                     <div class="rra-row">
-                        <div class="form-group rra-inline-group">
-                            <label for="parcelasExercicioAnterior">Parc. Exerc. Ant.:</label>
+                        <div class="form-group">
+                            <label for="parcelasExercicioAnterior">Nº de parcelas de exercícios anteriores:</label>
                             <input type="text" id="parcelasExercicioAnterior" name="parcelasExercicioAnterior" placeholder="0" inputmode="numeric">
                         </div>
-                        <div class="form-group rra-inline-group">
+                        <div class="form-group">
                             <label for="valorTotalAnterior">Valor Total:</label>
                             <input type="text" id="valorTotalAnterior" name="valorTotalAnterior" placeholder="R$ 0,00" readonly>
                         </div>
                     </div>
                     <div class="rra-row">
-                        <div class="form-group rra-inline-group">
-                            <label for="parcelasExercicioAtual">Parc. Exerc. Atual:</label>
+                        <div class="form-group">
+                            <label for="parcelasExercicioAtual">Nº de parcelas no exercício atual:</label>
                             <input type="text" id="parcelasExercicioAtual" name="parcelasExercicioAtual" placeholder="0" inputmode="numeric">
                         </div>
-                        <div class="form-group rra-inline-group">
+                        <div class="form-group">
                             <label for="valorTotalAtual">Valor Total:</label>
                             <input type="text" id="valorTotalAtual" name="valorTotalAtual" placeholder="R$ 0,00" readonly>
                         </div>
@@ -969,15 +791,9 @@
                 <label for="valorPrincipalAutor">Valor principal (autor):</label>
                 <input type="text" id="valorPrincipalAutor" name="valorPrincipalAutor" placeholder="R$ 0,00" readonly>
             </div>
-            <div class="double-field-row">
-                <div class="results-field-group">
-                    <label for="jurosAutor">Juros (autor):</label>
-                    <input type="text" id="jurosAutor" name="jurosAutor" placeholder="R$ 0,00" readonly>
-                </div>
-                <div class="results-field-group">
-                    <label for="selicAutor">Valor SELIC:</label>
-                    <input type="text" id="selicAutor" name="selicAutor" placeholder="R$ 0,00" readonly>
-                </div>
+            <div class="results-field-group">
+                <label for="jurosAutor">Juros (autor):</label>
+                <input type="text" id="jurosAutor" name="jurosAutor" placeholder="R$ 0,00" readonly>
             </div>
             <div class="results-field-group">
                 <label for="totalAutor">Total (autor):</label>
@@ -989,15 +805,9 @@
                 <label for="valorPrincipalAdvogado">Valor principal (adv):</label>
                 <input type="text" id="valorPrincipalAdvogado" name="valorPrincipalAdvogado" placeholder="R$ 0,00" readonly>
             </div>
-            <div class="double-field-row">
-                <div class="results-field-group">
-                    <label for="jurosAdvogado">Juros (adv):</label>
-                    <input type="text" id="jurosAdvogado" name="jurosAdvogado" placeholder="R$ 0,00" readonly>
-                </div>
-                <div class="results-field-group">
-                    <label for="selicAdvogado">Valor SELIC:</label>
-                    <input type="text" id="selicAdvogado" name="selicAdvogado" placeholder="R$ 0,00" readonly>
-                </div>
+            <div class="results-field-group">
+                <label for="jurosAdvogado">Juros (adv):</label>
+                <input type="text" id="jurosAdvogado" name="jurosAdvogado" placeholder="R$ 0,00" readonly>
             </div>
             <div class="results-field-group">
                 <label for="totalAdvogado">Total (adv):</label>
@@ -1012,103 +822,6 @@
             <div class="modal-buttons">
                 <button id="confirmClearButton" class="modal-button sim">SIM</button>
                 <button id="cancelClearButton" class="modal-button nao">NÃO</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de Histórico de Tetos -->
-    <div id="historicoModal" class="modal-overlay">
-        <div class="modal-content modal-content-historic">
-            <span class="close-modal-button">&times;</span>
-            <h2>Histórico: Salário Mínimo e Teto do JEF (2016-2025)</h2>
-            <div class="historic-table-container">
-                <table class="historic-table">
-                    <thead>
-                        <tr>
-                            <th>Ano</th>
-                            <th>Vigência</th>
-                            <th>Salário Mínimo (R$)</th>
-                            <th>Teto do JEF (60 x SM)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>2025</td>
-                            <td>Jan - Dez</td>
-                            <td>R$ 1.518,00</td>
-                            <td>R$ 91.080,00</td>
-                        </tr>
-                        <tr>
-                            <td>2024</td>
-                            <td>Jan - Dez</td>
-                            <td>R$ 1.412,00</td>
-                            <td>R$ 84.720,00</td>
-                        </tr>
-                        <tr>
-                            <td>2023</td>
-                            <td>Mai - Dez</td>
-                            <td>R$ 1.320,00</td>
-                            <td>R$ 79.200,00</td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td>Jan - Abr</td>
-                            <td>R$ 1.302,00</td>
-                            <td>R$ 78.120,00</td>
-                        </tr>
-                        <tr>
-                            <td>2022</td>
-                            <td>Jan - Dez</td>
-                            <td>R$ 1.212,00</td>
-                            <td>R$ 72.720,00</td>
-                        </tr>
-                        <tr>
-                            <td>2021</td>
-                            <td>Jan - Dez</td>
-                            <td>R$ 1.100,00</td>
-                            <td>R$ 66.000,00</td>
-                        </tr>
-                        <tr>
-                            <td>2020</td>
-                            <td>Fev - Dez</td>
-                            <td>R$ 1.045,00</td>
-                            <td>R$ 62.700,00</td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td>Janeiro</td>
-                            <td>R$ 1.039,00</td>
-                            <td>R$ 62.340,00</td>
-                        </tr>
-                        <tr>
-                            <td>2019</td>
-                            <td>Jan - Dez</td>
-                            <td>R$ 998,00</td>
-                            <td>R$ 59.880,00</td>
-                        </tr>
-                        <tr>
-                            <td>2018</td>
-                            <td>Jan - Dez</td>
-                            <td>R$ 954,00</td>
-                            <td>R$ 57.240,00</td>
-                        </tr>
-                        <tr>
-                            <td>2017</td>
-                            <td>Jan - Dez</td>
-                            <td>R$ 937,00</td>
-                            <td>R$ 56.220,00</td>
-                        </tr>
-                        <tr>
-                            <td>2016</td>
-                            <td>Jan - Dez</td>
-                            <td>R$ 880,00</td>
-                            <td>R$ 52.800,00</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="modal-buttons">
-                <button id="closeHistoricoButton" class="modal-button nao">Fechar</button>
             </div>
         </div>
     </div>
@@ -1186,6 +899,10 @@
                 <label for="desagioPercentual">Percentual de Deságio(%):</label>
                 <input type="text" id="desagioPercentual" placeholder="0%">
             </div>
+            <div class="modal-buttons">
+                <button id="calculateDesagioButton" class="action-button">Calcular</button>
+                <button id="clearDesagioButton" class="modal-button nao">Limpar dados</button>
+            </div>
             <hr>
             <div class="results-field-group">
                 <label for="desagioResultadoPrincipal">Valor Principal após deságio (R$):</label>
@@ -1211,10 +928,9 @@
                     <input type="text" id="desagioValorJurosCalculado" readonly placeholder="R$ 0,00">
                 </div>
             </div>
-            <div class="modal-buttons" style="flex-wrap: wrap;">
-                 <button id="clearDesagioButton" class="modal-button nao" style="flex-grow: 0; width: max-content; padding: 10px 20px;">Limpar dados</button>
-                 <button id="copyDesagioButton" class="modal-button copiar" disabled style="flex-grow: 0; width: max-content; padding: 10px 20px;">Copiar Dados</button>
-                 <button id="closeDesagioButton" class="modal-button nao" style="flex-grow: 0; width: max-content; padding: 10px 20px;">Fechar</button>
+            <div class="modal-buttons">
+                 <button id="copyDesagioButton" class="modal-button copiar" disabled>Copiar Dados</button>
+                 <button id="closeDesagioButton" class="modal-button nao">Fechar</button>
             </div>
         </div>
     </div>
@@ -1225,6 +941,7 @@
              <h2>CÁLCULOS DETALHADOS</h2>
              <div id="detalhamentoContent"></div>
              <div class="modal-buttons" style="margin-top: 20px; justify-content: center;">
+                <button id="savePdfBtn" class="modal-button copiar" style="flex-grow: 0; width: max-content; padding: 6px 16px; background-color: #000080; color: white;">Salvar esta tabela em formato .pdf</button>
                 <button id="closeDetalhamentoDetailBtn" class="modal-button nao" style="flex-grow: 0; width: max-content; padding: 6px 16px;">Fechar</button>
             </div>
         </div>
@@ -1238,73 +955,7 @@
 
     <script type="module">
         let iaResult = null; 
-        let isDetalhamentoClosedByUser = false; 
         
-        window.currentModalRRAData = null;
-
-        window.formatDecimalInput = function(input) {
-            let value = input.value.replace(/[^0-9,]/g, '');
-            let parts = value.split(',');
-            if (parts.length > 2) {
-                value = parts[0] + ',' + parts.slice(1).join('');
-            }
-            if (parts.length === 2 && parts[1].length > 2) {
-                value = parts[0] + ',' + parts[1].substring(0, 2);
-            }
-            input.value = value;
-        };
-
-        window.calculateModalRRA = function() {
-            if (!window.currentModalRRAData) return;
-            
-            const data = window.currentModalRRAData;
-            const inputAnt = document.getElementById('modalRraAnt');
-            const inputAtual = document.getElementById('modalRraAtual');
-            
-            if (!inputAnt || !inputAtual) return;
-
-            const parcelasAnt = parseFloat(inputAnt.value.replace(',', '.')) || 0;
-            const parcelasAtual = parseFloat(inputAtual.value.replace(',', '.')) || 0;
-            const totalParcelas = parcelasAnt + parcelasAtual;
-
-            const calcRRA = (baseValue) => {
-                if (totalParcelas === 0) return { ant: 0, atual: 0 };
-                if (parcelasAtual === 0) return { ant: baseValue, atual: 0 };
-                if (parcelasAnt === 0) return { ant: 0, atual: baseValue };
-                
-                const antBruto = (baseValue / totalParcelas) * parcelasAnt;
-                const ant = truncateToTwoDecimals(antBruto);
-                const atual = baseValue - ant;
-                return { ant, atual };
-            };
-
-            for(let i=0; i < data.numAutores; i++) {
-                const vals = calcRRA(data.oracleDividido[i]);
-                const antCell = document.getElementById(`oracle-ant-${i}`);
-                const atualCell = document.getElementById(`oracle-atual-${i}`);
-                if(antCell) antCell.textContent = formatCurrency(vals.ant);
-                if(atualCell) atualCell.textContent = formatCurrency(vals.atual);
-            }
-            const oracleGeralVals = calcRRA(data.oracleGeral);
-            const oracleAntGeral = document.getElementById('oracle-ant-geral');
-            const oracleAtualGeral = document.getElementById('oracle-atual-geral');
-            if(oracleAntGeral) oracleAntGeral.textContent = formatCurrency(oracleGeralVals.ant);
-            if(oracleAtualGeral) oracleAtualGeral.textContent = formatCurrency(oracleGeralVals.atual);
-
-            for(let i=0; i < data.numAutores; i++) {
-                const vals = calcRRA(data.sireaDividido[i]);
-                const antCell = document.getElementById(`sirea-ant-${i}`);
-                const atualCell = document.getElementById(`sirea-atual-${i}`);
-                if(antCell) antCell.textContent = formatCurrency(vals.ant);
-                if(atualCell) atualCell.textContent = formatCurrency(vals.atual);
-            }
-            const sireaGeralVals = calcRRA(data.sireaGeral);
-            const sireaAntGeral = document.getElementById('sirea-ant-geral');
-            const sireaAtualGeral = document.getElementById('sirea-atual-geral');
-            if(sireaAntGeral) sireaAntGeral.textContent = formatCurrency(sireaGeralVals.ant);
-            if(sireaAtualGeral) sireaAtualGeral.textContent = formatCurrency(sireaGeralVals.atual);
-        };
-
         function parseCurrencyToNumber(valueString) {
             if (!valueString) return 0;
             return parseFloat(valueString.replace('R$', '').replace(/\./g, '').replace(',', '.') || '0');
@@ -1397,108 +1048,85 @@
         function runCalculations() {
             const valorPrincipalInput = document.getElementById('valorPrincipal');
             const valorJurosInput = document.getElementById('valorJuros');
-            const valorSelicInput = document.getElementById('valorSelic'); 
             const totalInput = document.getElementById('total');
             const percentualAdvogadoStr = document.getElementById('percentualAdvogado').value;
             const valorPrincipalAdvogadoInput = document.getElementById('valorPrincipalAdvogado');
             const jurosAdvogadoInput = document.getElementById('jurosAdvogado');
-            const selicAdvogadoInput = document.getElementById('selicAdvogado'); 
             const totalAdvogadoInput = document.getElementById('totalAdvogado');
             const valorPrincipalAutorInput = document.getElementById('valorPrincipalAutor');
             const jurosAutorInput = document.getElementById('jurosAutor');
-            const selicAutorInput = document.getElementById('selicAutor'); 
             const totalAutorInput = document.getElementById('totalAutor');
             const numAutoresSelect = document.getElementById('numAutores');
             const detalhamentoModal = document.getElementById('detalhamentoModal');
 
             const valorPrincipal = parseCurrencyToNumber(valorPrincipalInput.value);
             const valorJuros = parseCurrencyToNumber(valorJurosInput.value);
-            const valorSelic = parseCurrencyToNumber(valorSelicInput.value); 
             const percentualAdvogado = parseFloat(percentualAdvogadoStr.replace('%', '').replace(',', '.')) / 100 || 0;
             const numAutores = parseInt(numAutoresSelect.value) || 1;
 
-            const totalGeral = valorPrincipal + valorJuros + valorSelic; 
+            const totalGeral = valorPrincipal + valorJuros;
             
             const vpAdvogadoBase = truncateToTwoDecimals(valorPrincipal * percentualAdvogado);
             const jAdvogadoBase = truncateToTwoDecimals(valorJuros * percentualAdvogado);
-            const selicAdvogadoBase = truncateToTwoDecimals(valorSelic * percentualAdvogado); 
-            const totalAdvogadoBase = vpAdvogadoBase + jAdvogadoBase + selicAdvogadoBase;
+            const totalAdvogadoBase = vpAdvogadoBase + jAdvogadoBase;
             
             const vpAutorBase = valorPrincipal - vpAdvogadoBase;
             const jAutorBase = valorJuros - jAdvogadoBase;
-            const selicAutorBase = valorSelic - selicAdvogadoBase; 
-            const totalAutorBase = vpAutorBase + jAutorBase + selicAutorBase;
+            const totalAutorBase = vpAutorBase + jAutorBase;
             
             valorPrincipalAdvogadoInput.value = formatCurrency(vpAdvogadoBase);
             jurosAdvogadoInput.value = formatCurrency(jAdvogadoBase);
-            selicAdvogadoInput.value = formatCurrency(selicAdvogadoBase);
             totalAdvogadoInput.value = formatCurrency(totalAdvogadoBase);
 
             valorPrincipalAutorInput.value = formatCurrency(vpAutorBase);
             jurosAutorInput.value = formatCurrency(jAutorBase);
-            selicAutorInput.value = formatCurrency(selicAutorBase);
             totalAutorInput.value = formatCurrency(totalAutorBase);
 
             if (numAutores > 1) {
-                generateDetalhamentoTable(numAutores, vpAutorBase, jAutorBase, selicAutorBase, vpAdvogadoBase, jAdvogadoBase, selicAdvogadoBase);
-                if (!isDetalhamentoClosedByUser) {
-                    detalhamentoModal.classList.add('active');
-                }
+                detalhamentoModal.classList.add('active');
+                generateDetalhamentoTable(numAutores, vpAutorBase, jAutorBase, vpAdvogadoBase, jAdvogadoBase);
             } else {
                  detalhamentoModal.classList.remove('active');
-                 isDetalhamentoClosedByUser = false; 
             }
             
             const parcelasAnteriores = parseInt(document.getElementById('parcelasExercicioAnterior').value) || 0;
             const parcelasAtuais = parseInt(document.getElementById('parcelasExercicioAtual').value) || 0;
             const totalParcelas = parcelasAnteriores + parcelasAtuais;
             
-            const rraBaseTypeElement = document.querySelector('input[name="rraBaseType"]:checked');
-            const rraBaseType = rraBaseTypeElement ? rraBaseTypeElement.value : 'ORACLE';
-            const baseRRA = (rraBaseType === 'SIREA') ? totalAutorBase : totalGeral;
-
             if (totalParcelas > 0) {
-                let resultadoAnteriorFinal = 0;
-                let resultadoAtualFinal = 0;
-                
-                if (parcelasAtuais === 0) {
-                    resultadoAnteriorFinal = baseRRA;
-                    resultadoAtualFinal = 0;
-                } else if (parcelasAnteriores === 0) {
-                    resultadoAnteriorFinal = 0;
-                    resultadoAtualFinal = baseRRA;
-                } else {
-                    const resultadoAnteriorBruto = (baseRRA / totalParcelas) * parcelasAnteriores;
-                    resultadoAnteriorFinal = truncateToTwoDecimals(resultadoAnteriorBruto);
-                    resultadoAtualFinal = baseRRA - resultadoAnteriorFinal;
-                }
-                
-                document.getElementById('valorTotalAnterior').value = formatCurrency(resultadoAnteriorFinal);
+                 const valorTotalAnterior = parseCurrencyToNumber(document.getElementById('valorTotalAnterior').value);
+                 const valorTotalAtual = parseCurrencyToNumber(document.getElementById('valorTotalAtual').value);
+                 const totalRRAValues = valorTotalAnterior + valorTotalAtual;
+                 
+                 const totalGeralRRA = totalRRAValues > 0 ? totalRRAValues : totalGeral;
+
+                const resultadoAnteriorBruto = (totalGeralRRA / totalParcelas) * parcelasAnteriores;
+                const resultadoAnteriorFinal = truncateToTwoDecimals(resultadoAnteriorBruto);
+                const resultadoAtualFinal = totalGeralRRA - resultadoAnteriorFinal;
+                 document.getElementById('valorTotalAnterior').value = formatCurrency(resultadoAnteriorFinal);
                 document.getElementById('valorTotalAtual').value = formatCurrency(resultadoAtualFinal);
             } else {
                  document.getElementById('valorTotalAnterior').value = formatCurrency(0);
-                 document.getElementById('valorTotalAtual').value = formatCurrency(0);
+                document.getElementById('valorTotalAtual').value = formatCurrency(0);
             }
 
             totalInput.value = formatCurrency(totalGeral);
         }
 
-        function generateDetalhamentoTable(numAutores, vpAutorTotal, jAutorTotal, selicAutorTotal, vpAdvTotal, jAdvTotal, selicAdvTotal) {
+        function generateDetalhamentoTable(numAutores, vpAutorTotal, jAutorTotal, vpAdvTotal, jAdvTotal) {
             const contentDiv = document.getElementById('detalhamentoContent');
             
-            const [vpAutorDividido, jAutorDividido, selicAutorDividido] = distributeValues(vpAutorTotal, jAutorTotal, selicAutorTotal, numAutores);
-            const [vpAdvDividido, jAdvDividido, selicAdvDividido] = distributeValues(vpAdvTotal, jAdvTotal, selicAdvTotal, numAutores);
+            const [vpAutorDividido, jAutorDividido] = distributeValues(vpAutorTotal, jAutorTotal, numAutores);
+            const [vpAdvDividido, jAdvDividido] = distributeValues(vpAdvTotal, jAdvTotal, numAutores);
 
-            let totalAutorDividido = vpAutorDividido.map((val, index) => val + jAutorDividido[index] + selicAutorDividido[index]);
-            let totalAdvDividido = vpAdvDividido.map((val, index) => val + jAdvDividido[index] + selicAdvDividido[index]);
+            let totalAutorDividido = vpAutorDividido.map((val, index) => val + jAutorDividido[index]);
+            let totalAdvDividido = vpAdvDividido.map((val, index) => val + jAdvDividido[index]);
             
-            let tableHTML = `<div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px; width: 100%;">
-                              <div style="flex-shrink: 0; width: 110px; text-align: center;"><span class="badge-yellow">AUTORES</span></div>
-                              <div style="flex-grow: 1; overflow-x: auto;">
-                                 <table style="margin-top: 0; margin-bottom: 0;">
-                                    <thead>
-                                        <tr>
-                                            <th>Valores</th>`;
+            let tableHTML = `<h3 style="color: red;">CÁLCULOS PARA OS AUTORES DA AÇÃO</h3>
+                             <table>
+                                <thead>
+                                    <tr>
+                                        <th>Valores</th>`;
             for(let i=1; i<=numAutores; i++) { tableHTML += `<th>AUTOR ${i}</th>`; }
             tableHTML += `<th>TOTAL AUTOR</th></tr></thead><tbody>`;
 
@@ -1510,25 +1138,17 @@
             jAutorDividido.forEach(val => tableHTML += `<td>${formatCurrency(val)}</td>`);
             tableHTML += `<td>${formatCurrency(jAutorTotal)}</td></tr>`;
 
-            tableHTML += `<tr><td>SELIC</td>`;
-            selicAutorDividido.forEach(val => tableHTML += `<td>${formatCurrency(val)}</td>`);
-            tableHTML += `<td>${formatCurrency(selicAutorTotal)}</td></tr>`;
-
             tableHTML += `<tr><td>Total</td>`;
             totalAutorDividido.forEach(val => tableHTML += `<td>${formatCurrency(val)}</td>`);
-            tableHTML += `<td>${formatCurrency(vpAutorTotal + jAutorTotal + selicAutorTotal)}</td></tr>`;
+            tableHTML += `<td>${formatCurrency(vpAutorTotal + jAutorTotal)}</td></tr>`;
             
-            tableHTML += `</tbody></table>
-                              </div>
-                          </div>`;
+            tableHTML += `</tbody></table>`;
             
-            tableHTML += `<div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px; width: 100%;">
-                              <div style="flex-shrink: 0; width: 110px; text-align: center;"><span class="badge-yellow">ADVOGADO(S)</span></div>
-                              <div style="flex-grow: 1; overflow-x: auto;">
-                                 <table style="margin-top: 0; margin-bottom: 0;">
-                                    <thead>
-                                        <tr>
-                                            <th>Valores</th>`;
+            tableHTML += `<h3 style="color: red;">CÁLCULOS PARA O(S) ADVOGADO(S)</h3>
+                             <table>
+                                <thead>
+                                    <tr>
+                                        <th>Valores</th>`;
             for(let i=1; i<=numAutores; i++) { tableHTML += `<th>ADVOGADO ${i}</th>`; }
             tableHTML += `<th>TOTAL ADV</th></tr></thead><tbody>`;
             
@@ -1539,98 +1159,12 @@
             tableHTML += `<tr><td>Juros</td>`;
             jAdvDividido.forEach(val => tableHTML += `<td>${formatCurrency(val)}</td>`);
             tableHTML += `<td>${formatCurrency(jAdvTotal)}</td></tr>`;
-
-            tableHTML += `<tr><td>SELIC</td>`;
-            selicAdvDividido.forEach(val => tableHTML += `<td>${formatCurrency(val)}</td>`);
-            tableHTML += `<td>${formatCurrency(selicAdvTotal)}</td></tr>`;
             
             tableHTML += `<tr><td>Total</td>`;
             totalAdvDividido.forEach(val => tableHTML += `<td>${formatCurrency(val)}</td>`);
-            tableHTML += `<td>${formatCurrency(vpAdvTotal + jAdvTotal + selicAdvTotal)}</td></tr>`;
+            tableHTML += `<td>${formatCurrency(vpAdvTotal + jAdvTotal)}</td></tr>`;
 
-            tableHTML += `</tbody></table>
-                              </div>
-                          </div>`;
-
-            let totalRpvDividido = totalAutorDividido.map((val, index) => val + totalAdvDividido[index]);
-            let totalRpvGeral = (vpAutorTotal + jAutorTotal + selicAutorTotal) + (vpAdvTotal + jAdvTotal + selicAdvTotal);
-            let totalAutorGeral = vpAutorTotal + jAutorTotal + selicAutorTotal;
-
-            window.currentModalRRAData = {
-                numAutores: numAutores,
-                oracleDividido: totalRpvDividido,
-                oracleGeral: totalRpvGeral,
-                sireaDividido: totalAutorDividido,
-                sireaGeral: totalAutorGeral
-            };
-
-            tableHTML += `
-                <div style="display: flex; align-items: center; gap: 15px; margin-top: 20px; margin-bottom: 15px; width: 100%;">
-                    <div style="flex-shrink: 0; width: 110px; text-align: center;"><span class="badge-blue">RRA</span></div>
-                    <div style="display: flex; gap: 20px; flex-grow: 1; flex-wrap: wrap;">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <label style="font-weight: bold; font-size: 0.85em; color: black; white-space: nowrap; margin: 0;">Parcelas de Exerc. Anter.:</label>
-                            <input type="text" id="modalRraAnt" style="width: 70px; padding: 0.4em; border: 1px solid #ccc; border-radius: 4px; font-size: 0.95em; background-color: #fff; color: #000080; font-weight: bold; text-align: center;" placeholder="0" oninput="formatDecimalInput(this); calculateModalRRA();">
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <label style="font-weight: bold; font-size: 0.85em; color: black; white-space: nowrap; margin: 0;">Parcelas no Exerc. Atual:</label>
-                            <input type="text" id="modalRraAtual" style="width: 70px; padding: 0.4em; border: 1px solid #ccc; border-radius: 4px; font-size: 0.95em; background-color: #fff; color: #000080; font-weight: bold; text-align: center;" placeholder="0" oninput="formatDecimalInput(this); calculateModalRRA();">
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            tableHTML += `<div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px; width: 100%;">
-                              <div style="flex-shrink: 0; width: 110px; text-align: center;"><span class="badge-yellow">ORACLE</span></div>
-                              <div style="flex-grow: 1; overflow-x: auto;">
-                                 <table style="margin-top: 0; margin-bottom: 0;">
-                                    <thead>
-                                        <tr>
-                                            <th>Valores</th>`;
-            for(let i=1; i<=numAutores; i++) { tableHTML += `<th>AUTOR + ADV ${i}</th>`; }
-            tableHTML += `<th>TOTAL GERAL</th></tr></thead><tbody>`;
-            
-            tableHTML += `<tr><td>Total RPV</td>`;
-            totalRpvDividido.forEach(val => tableHTML += `<td>${formatCurrency(val)}</td>`);
-            tableHTML += `<td>${formatCurrency(totalRpvGeral)}</td></tr>`;
-            
-            tableHTML += `<tr><td>Parc. Exerc. Ant.:</td>`;
-            totalRpvDividido.forEach((val, i) => tableHTML += `<td id="oracle-ant-${i}">R$ 0,00</td>`);
-            tableHTML += `<td id="oracle-ant-geral">R$ 0,00</td></tr>`;
-            
-            tableHTML += `<tr><td>Parc. Exerc. Atual:</td>`;
-            totalRpvDividido.forEach((val, i) => tableHTML += `<td id="oracle-atual-${i}">R$ 0,00</td>`);
-            tableHTML += `<td id="oracle-atual-geral">R$ 0,00</td></tr>`;
-
-            tableHTML += `</tbody></table>
-                              </div>
-                          </div>`;
-
-            tableHTML += `<div style="display: flex; align-items: center; gap: 15px; margin-top: 25px; margin-bottom: 30px; width: 100%;">
-                              <div style="flex-shrink: 0; width: 110px; text-align: center;"><span class="badge-yellow">SIREA</span></div>
-                              <div style="flex-grow: 1; overflow-x: auto;">
-                                 <table style="margin-top: 0; margin-bottom: 0;">
-                                    <thead>
-                                        <tr>
-                                            <th>Valores</th>`;
-            for(let i=1; i<=numAutores; i++) { tableHTML += `<th>AUTOR ${i}</th>`; }
-            tableHTML += `<th>TOTAL GERAL</th></tr></thead><tbody>`;
-            
-            tableHTML += `<tr><td>Total RPV</td>`;
-            totalAutorDividido.forEach(val => tableHTML += `<td>${formatCurrency(val)}</td>`);
-            tableHTML += `<td>${formatCurrency(totalAutorGeral)}</td></tr>`;
-
-            tableHTML += `<tr><td>Parc. Exerc. Ant.:</td>`;
-            totalAutorDividido.forEach((val, i) => tableHTML += `<td id="sirea-ant-${i}">R$ 0,00</td>`);
-            tableHTML += `<td id="sirea-ant-geral">R$ 0,00</td></tr>`;
-            
-            tableHTML += `<tr><td>Parc. Exerc. Atual:</td>`;
-            totalAutorDividido.forEach((val, i) => tableHTML += `<td id="sirea-atual-${i}">R$ 0,00</td>`);
-            tableHTML += `<td id="sirea-atual-geral">R$ 0,00</td></tr>`;
-
-            tableHTML += `</tbody></table>
-                              </div>
-                          </div>`;
+            tableHTML += `</tbody></table>`;
 
             contentDiv.innerHTML = tableHTML;
 
@@ -1663,11 +1197,9 @@
                     }
                 });
             });
-            
-            window.calculateModalRRA();
         }
 
-        function distributeValues(principal, juros, selic, numAutores) {
+        function distributeValues(principal, juros, numAutores) {
             function distribute(total) {
                 if (numAutores === 0) return [];
                 
@@ -1684,26 +1216,19 @@
 
             const vpDistribuido = distribute(principal);
             const jDistribuido = distribute(juros);
-            const selicDistribuido = distribute(selic);
             
-            return [vpDistribuido, jDistribuido, selicDistribuido];
+            return [vpDistribuido, jDistribuido];
         }
 
         function clearAllFields() {
             document.getElementById('valorPrincipal').value = '';
             document.getElementById('valorJuros').value = '';
-            document.getElementById('valorSelic').value = ''; 
             document.getElementById('percentualAdvogado').value = '';
             document.getElementById('parcelasExercicioAnterior').value = '';
             document.getElementById('parcelasExercicioAtual').value = '';
             document.getElementById('valorTotalAnterior').value = '';
             document.getElementById('valorTotalAtual').value = '';
             document.getElementById('numAutores').value = '1';
-            
-            const oracleRadio = document.querySelector('input[name="rraBaseType"][value="ORACLE"]');
-            if(oracleRadio) oracleRadio.checked = true; 
-            
-            isDetalhamentoClosedByUser = false; 
             runCalculations();
         }
         
@@ -1760,6 +1285,7 @@
             const detalhamentoHeader = detalhamentoModal.querySelector('h2');
             const closeDetalhamentoModal = detalhamentoModal.querySelector('.close-modal-button');
             const closeDetalhamentoDetailBtn = document.getElementById('closeDetalhamentoDetailBtn');
+            const savePdfBtn = document.getElementById('savePdfBtn'); // Botão Gerar PDF
             
             makeDraggable(detalhamentoModalContent, detalhamentoHeader);
 
@@ -1769,11 +1295,93 @@
                 detalhamentoModalContent.style.top = '';
                 detalhamentoModalContent.style.left = '';
                 detalhamentoModalContent.style.transform = '';
-                isDetalhamentoClosedByUser = true; 
             }
 
             closeDetalhamentoModal.addEventListener('click', closeAndResetDetalhamentoModal);
             closeDetalhamentoDetailBtn.addEventListener('click', closeAndResetDetalhamentoModal);
+
+            // Geração de PDF usando html2canvas e jsPDF
+            savePdfBtn.addEventListener('click', async () => {
+                const { jsPDF } = window.jspdf;
+                const modalContent = document.querySelector('#detalhamentoModal .modal-content');
+                const closeBtn = document.querySelector('#detalhamentoModal .close-modal-button');
+                const actionButtons = document.querySelector('#detalhamentoModal .modal-buttons');
+
+                const originalText = savePdfBtn.innerText;
+                savePdfBtn.innerText = 'Gerando PDF aguarde...';
+                savePdfBtn.disabled = true;
+
+                // Esconder botões na hora do "retrato" da tela
+                closeBtn.style.display = 'none';
+                actionButtons.style.display = 'none';
+
+                // Salvar propriedades originais para evitar corte das tabelas na impressão
+                const originalMaxHeight = modalContent.style.maxHeight;
+                const originalOverflowY = modalContent.style.overflowY;
+                const originalOverflowX = modalContent.style.overflowX;
+                const originalMaxWidth = modalContent.style.maxWidth;
+                const originalWidth = modalContent.style.width;
+
+                // Expandir o modal internamente para capturar toda a tabela sem barras de rolagem
+                modalContent.style.maxHeight = 'none';
+                modalContent.style.overflowY = 'visible';
+                modalContent.style.overflowX = 'visible';
+                modalContent.style.maxWidth = 'none';
+                modalContent.style.width = 'max-content';
+
+                try {
+                    const canvas = await html2canvas(modalContent, { 
+                        scale: 2, 
+                        useCORS: true,
+                        backgroundColor: '#ffffff' 
+                    });
+                    const imgData = canvas.toDataURL('image/png');
+                    
+                    // Definindo página A4 formato Paisagem (Horizontal) para acomodar melhor a tabela larga
+                    const pdf = new jsPDF({
+                        orientation: 'landscape',
+                        unit: 'mm',
+                        format: 'a4'
+                    });
+
+                    const pdfWidth = pdf.internal.pageSize.getWidth();
+                    const pdfHeight = pdf.internal.pageSize.getHeight();
+                    
+                    const imgProps = pdf.getImageProperties(imgData);
+                    const imgRatio = imgProps.width / imgProps.height;
+
+                    let finalWidth = pdfWidth - 20; // margem de 10mm de cada lado
+                    let finalHeight = finalWidth / imgRatio;
+
+                    if (finalHeight > pdfHeight - 20) {
+                        finalHeight = pdfHeight - 20;
+                        finalWidth = finalHeight * imgRatio;
+                    }
+
+                    const marginX = (pdfWidth - finalWidth) / 2;
+                    const marginY = (pdfHeight - finalHeight) / 2;
+
+                    pdf.addImage(imgData, 'PNG', marginX, marginY, finalWidth, finalHeight);
+                    pdf.save('Calculos_Detalhados_RPV.pdf');
+                    showToast('PDF gerado com sucesso!');
+                } catch (error) {
+                    console.error('Erro ao gerar PDF:', error);
+                    showToast('Erro ao gerar o PDF.');
+                } finally {
+                    // Restaurar elementos escondidos e estilos ao normal
+                    closeBtn.style.display = 'block';
+                    actionButtons.style.display = 'flex';
+                    
+                    modalContent.style.maxHeight = originalMaxHeight;
+                    modalContent.style.overflowY = originalOverflowY;
+                    modalContent.style.overflowX = originalOverflowX;
+                    modalContent.style.maxWidth = originalMaxWidth;
+                    modalContent.style.width = originalWidth;
+
+                    savePdfBtn.innerText = originalText;
+                    savePdfBtn.disabled = false;
+                }
+            });
 
             const clearButton = document.getElementById('clearButton');
             const confirmationModal = document.getElementById('confirmationModal');
@@ -1905,6 +1513,7 @@
             const desagioButton = document.getElementById('desagioButton');
             const desagioModal = document.getElementById('desagioModal');
 
+            const calculateDesagioButton = document.getElementById('calculateDesagioButton');
             const clearDesagioButton = document.getElementById('clearDesagioButton');
             const copyDesagioButton = document.getElementById('copyDesagioButton');
             const closeDesagioButton = document.getElementById('closeDesagioButton');
@@ -1935,7 +1544,7 @@
             }
             clearDesagioButton.addEventListener('click', clearDesagioModalFields);
 
-            function calculateDesagio() {
+            calculateDesagioButton.addEventListener('click', () => {
                 const principal = parseCurrencyToNumber(desagioValorPrincipalInput.value);
                 const juros = parseCurrencyToNumber(desagioValorJurosInput.value);
                 const percentualStr = desagioPercentualInput.value;
@@ -1954,12 +1563,8 @@
                 desagioValorPrincipalCalculadoInput.value = formatCurrency(desagioPrincipal);
                 desagioValorJurosCalculadoInput.value = formatCurrency(desagioJuros);
 
-                if (principal > 0 || juros > 0) {
-                    copyDesagioButton.disabled = false;
-                } else {
-                    copyDesagioButton.disabled = true;
-                }
-            }
+                copyDesagioButton.disabled = false;
+            });
 
             copyDesagioButton.addEventListener('click', () => {
                 document.getElementById('valorPrincipal').value = desagioResultadoPrincipalInput.value;
@@ -1969,9 +1574,9 @@
             });
 
 
-            desagioValorPrincipalInput.addEventListener('input', function() { formatInputCurrency(this); calculateDesagio(); });
-            desagioValorJurosInput.addEventListener('input', function() { formatInputCurrency(this); calculateDesagio(); });
-            desagioPercentualInput.addEventListener('input', function() { formatPercentage(this); calculateDesagio(); });
+            desagioValorPrincipalInput.addEventListener('input', function() { formatInputCurrency(this); });
+            desagioValorJurosInput.addEventListener('input', function() { formatInputCurrency(this); });
+            desagioPercentualInput.addEventListener('input', function() { formatPercentage(this); });
 
             document.getElementById('rpaValorTotal').addEventListener('input', function() { formatInputCurrency(this); });
             document.getElementById('rpaValorJuros').addEventListener('input', function() { formatInputCurrency(this); });
@@ -2022,11 +1627,6 @@
                 runCalculations();
             });
 
-            document.getElementById('valorSelic').addEventListener('input', function() {
-                formatInputCurrency(this);
-                runCalculations();
-            });
-
             document.getElementById('percentualAdvogado').addEventListener('input', function() {
                 formatPercentage(this);
                 runCalculations();
@@ -2042,34 +1642,8 @@
                 runCalculations();
             });
 
-            document.querySelectorAll('input[name="rraBaseType"]').forEach(radio => {
-                radio.addEventListener('change', runCalculations);
-            });
+            document.getElementById('numAutores').addEventListener('change', runCalculations);
 
-            document.getElementById('numAutores').addEventListener('change', function() {
-                isDetalhamentoClosedByUser = false;
-                runCalculations();
-            });
-            
-            const historicoTetoButton = document.getElementById('historicoTetoButton');
-            const historicoModal = document.getElementById('historicoModal');
-            const closeHistoricoButton = document.getElementById('closeHistoricoButton');
-            const closeHistoricoX = historicoModal.querySelector('.close-modal-button');
-
-            historicoTetoButton.addEventListener('click', () => {
-                historicoModal.classList.add('active');
-            });
-
-            function closeHistorico() {
-                historicoModal.classList.remove('active');
-            }
-
-            closeHistoricoButton.addEventListener('click', closeHistorico);
-            closeHistoricoX.addEventListener('click', closeHistorico);
-            
-            historicoModal.addEventListener('click', (e) => {
-                if (e.target === historicoModal) closeHistorico();
-            });
 
             function updateDigitalClock() {
                 const clockElement = document.getElementById('digitalClock');
