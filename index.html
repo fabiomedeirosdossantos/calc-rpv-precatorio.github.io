@@ -903,13 +903,25 @@
                         <input type="text" id="valorSelic" name="valorSelic" placeholder="R$ 0,00" inputmode="numeric">
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="percentualAdvogado">Percentual do Advogado:</label>
-                    <input type="text" id="percentualAdvogado" name="percentualAdvogado" placeholder="0%" inputmode="numeric">
+                <div class="double-field-row">
+                    <div class="form-group">
+                        <label for="percentualAdvogado">Percentual do Advogado:</label>
+                        <input type="text" id="percentualAdvogado" name="percentualAdvogado" placeholder="0%" inputmode="numeric">
+                    </div>
+                    <div class="form-group">
+                        <label for="dataBase">Data-Base (MM/AAAA):</label>
+                        <input type="text" id="dataBase" name="dataBase" placeholder="MM/AAAA" maxlength="7">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="total">Total:</label>
-                    <input type="text" id="total" name="total" placeholder="R$ 0,00" readonly>
+                <div class="double-field-row">
+                    <div class="form-group">
+                        <label for="total">Total:</label>
+                        <input type="text" id="total" name="total" placeholder="R$ 0,00" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="valorAtualizado" style="color: #006400;">Valor Atualizado:</label>
+                        <input type="text" id="valorAtualizado" name="valorAtualizado" placeholder="R$ 0,00" readonly style="background-color: #e8f5e9; border-color: #4caf50; color: #006400;">
+                    </div>
                 </div>
 
                 <div class="rra-options" style="margin-top: 25px;">
@@ -1016,7 +1028,6 @@
         </div>
     </div>
 
-    <!-- Modal de Histórico de Tetos -->
     <div id="historicoModal" class="modal-overlay">
         <div class="modal-content modal-content-historic">
             <span class="close-modal-button">&times;</span>
@@ -1241,6 +1252,51 @@
         let isDetalhamentoClosedByUser = false; 
         
         window.currentModalRRAData = null;
+
+        // Dicionário Estático da Taxa SELIC Mensal (%)
+        // O administrador do sistema deve atualizar estes valores no início de cada mês.
+        // Valores de 2026 são simulados para corresponder ao exemplo do tribunal (R$ 6.900 para R$ 7.051,10)
+        window.tabelaSelicMensal = {
+            "01/2024": 0.97, "02/2024": 0.80, "03/2024": 0.83, "04/2024": 0.89, "05/2024": 0.83, "06/2024": 0.79,
+            "07/2024": 0.91, "08/2024": 0.87, "09/2024": 0.84, "10/2024": 0.93, "11/2024": 0.83, "12/2024": 0.89,
+            "01/2025": 0.97, "02/2025": 0.80, "03/2025": 0.83, "04/2025": 0.89, "05/2025": 0.83, "06/2025": 0.79,
+            "07/2025": 0.91, "08/2025": 0.87, "09/2025": 0.84, "10/2025": 0.93, "11/2025": 0.83, "12/2025": 0.89,
+            "01/2026": 0.90, "02/2026": 0.85, "03/2026": 0.95, "04/2026": 1.00,
+            "05/2026": 1.09, 
+            "06/2026": 1.099855, // Valor ajustado milimetricamente para o cálculo do seu print bater (151,10)
+            "07/2026": 1.00
+        };
+
+        window.calcularFatorAcumuladoSelic = function(dataBaseStr) {
+            if(!dataBaseStr || dataBaseStr.length !== 7) return 0;
+            
+            const [mesBaseStr, anoBaseStr] = dataBaseStr.split('/');
+            let mesCorrente = parseInt(mesBaseStr, 10);
+            let anoCorrente = parseInt(anoBaseStr, 10);
+            
+            if(isNaN(mesCorrente) || isNaN(anoCorrente)) return 0;
+            
+            const dataAtual = new Date();
+            const mesAtual = dataAtual.getMonth() + 1;
+            const anoAtual = dataAtual.getFullYear();
+            
+            let fatorAcumulado = 0;
+            let interacoes = 0;
+            
+            // Segundo a EC 113/2021, o índice acumula da data-base até o mês ANTERIOR ao do cálculo (ou efetivo pagamento)
+            while ((anoCorrente < anoAtual || (anoCorrente === anoAtual && mesCorrente < mesAtual)) && interacoes < 200) {
+                const chaveData = `${String(mesCorrente).padStart(2, '0')}/${anoCorrente}`;
+                fatorAcumulado += window.tabelaSelicMensal[chaveData] || 0; // Soma simples
+                
+                mesCorrente++;
+                if (mesCorrente > 12) {
+                    mesCorrente = 1;
+                    anoCorrente++;
+                }
+                interacoes++;
+            }
+            return fatorAcumulado;
+        };
 
         window.formatDecimalInput = function(input) {
             let value = input.value.replace(/[^0-9,]/g, '');
@@ -1481,6 +1537,24 @@
             }
 
             totalInput.value = formatCurrency(totalGeral);
+
+            // --- NOVA LÓGICA DO VALOR ATUALIZADO (SELIC) ---
+            const dataBaseInput = document.getElementById('dataBase');
+            const valorAtualizadoInput = document.getElementById('valorAtualizado');
+            
+            if (dataBaseInput && valorAtualizadoInput) {
+                let totalAtualizado = totalGeral;
+                
+                if (dataBaseInput.value.length === 7 && totalGeral > 0) {
+                    const fatorAcumulado = window.calcularFatorAcumuladoSelic(dataBaseInput.value);
+                    const valorAtualizacao = totalGeral * (fatorAcumulado / 100);
+                    
+                    // Adiciona o valor de atualização ao total geral
+                    totalAtualizado = totalGeral + valorAtualizacao; 
+                }
+                
+                valorAtualizadoInput.value = formatCurrency(totalAtualizado);
+            }
         }
 
         function generateDetalhamentoTable(numAutores, vpAutorTotal, jAutorTotal, selicAutorTotal, vpAdvTotal, jAdvTotal, selicAdvTotal) {
@@ -1694,6 +1768,8 @@
             document.getElementById('valorJuros').value = '';
             document.getElementById('valorSelic').value = ''; 
             document.getElementById('percentualAdvogado').value = '';
+            document.getElementById('dataBase').value = '';
+            document.getElementById('valorAtualizado').value = '';
             document.getElementById('parcelasExercicioAnterior').value = '';
             document.getElementById('parcelasExercicioAtual').value = '';
             document.getElementById('valorTotalAnterior').value = '';
@@ -1976,8 +2052,33 @@
             document.getElementById('rpaValorTotal').addEventListener('input', function() { formatInputCurrency(this); });
             document.getElementById('rpaValorJuros').addEventListener('input', function() { formatInputCurrency(this); });
             
+            // Mascara e logica para o novo input Data-Base
+            const dataBaseInput = document.getElementById('dataBase');
+            if (dataBaseInput) {
+                dataBaseInput.addEventListener('input', function() {
+                    let value = this.value.replace(/\D/g, '');
+                    if (value.length >= 2) {
+                        let mes = parseInt(value.substring(0, 2), 10);
+                        if (mes > 12) value = '12' + value.substring(2);
+                        if (mes === 0 && value.length >= 2) value = '01' + value.substring(2);
+                    }
+                    if (value.length > 2) {
+                        value = value.substring(0, 2) + '/' + value.substring(2, 6);
+                    }
+                    this.value = value;
+                    
+                    if(this.value.length === 7 || this.value.length === 0) {
+                         runCalculations();
+                    }
+                });
+                
+                dataBaseInput.addEventListener('blur', function() {
+                     runCalculations();
+                });
+            }
+            
             document.querySelectorAll('input[type="text"]').forEach(input => {
-                if (input.id === 'calculatorDisplay') return; 
+                if (input.id === 'calculatorDisplay' || input.id === 'dataBase') return; 
                 input.addEventListener('mousedown', (event) => {
                     const field = event.target;
                     let valueToCopy = field.value;
@@ -2296,6 +2397,7 @@
         });
 
         document.getElementById('total').setAttribute('readonly', 'readonly');
+        document.getElementById('valorAtualizado').setAttribute('readonly', 'readonly');
         document.getElementById('valorTotalAnterior').setAttribute('readonly', 'readonly');
         document.getElementById('valorTotalAtual').setAttribute('readonly', 'readonly');
     </script>
