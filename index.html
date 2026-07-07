@@ -1242,6 +1242,19 @@
             </div>
         </div>
     </div>
+
+    <!-- Novo Modal de Aviso Inicial -->
+    <div id="avisoInicialModal" class="modal-overlay active"> <!-- A classe 'active' faz com que ele apareça ao carregar -->
+        <div class="modal-content">
+            <h2 style="color: #c62828;">Aviso de Atualização</h2>
+            <p style="text-align: justify; font-size: 1.1em; line-height: 1.5; color: #333;">
+                O campo <strong>"Valor atualizado (Estimativa):"</strong> está em fase de implementação pelo desenvolvedor. O código está sendo atualizado com os índices de correção para que o valor estimado seja calculado corretamente.
+            </p>
+            <div class="modal-buttons" style="margin-top: 25px;">
+                <button id="fecharAvisoInicial" class="modal-button copiar">FECHAR</button>
+            </div>
+        </div>
+    </div>
     
     <div id="warningModal" class="modal-overlay">
         <div class="modal-content">
@@ -1832,6 +1845,16 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             runCalculations(); 
+            
+            // Lógica do Modal de Aviso Inicial
+            const avisoInicialModal = document.getElementById('avisoInicialModal');
+            const fecharAvisoInicialBtn = document.getElementById('fecharAvisoInicial');
+
+            if (avisoInicialModal && fecharAvisoInicialBtn) {
+                fecharAvisoInicialBtn.addEventListener('click', () => {
+                    avisoInicialModal.classList.remove('active');
+                });
+            }
             
             const detalhamentoModal = document.getElementById('detalhamentoModal');
             const detalhamentoModalContent = detalhamentoModal.querySelector('.modal-content');
