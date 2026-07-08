@@ -542,6 +542,7 @@
             display: flex;
             justify-content: center;
             gap: 15px;
+            flex-wrap: wrap; /* Adicionado para garantir que botões não fujam do modal */
         }
         .modal-desagio-results {
             display: flex;
@@ -1126,6 +1127,7 @@
         </div>
     </div>
 
+    <!-- Modal CÁLCULO RPV ACIMA DO TETO -->
     <div id="rpaTetoModal" class="modal-overlay">
         <div class="modal-content">
             <span class="close-modal-button">&times;</span>
@@ -1155,12 +1157,15 @@
                 <label for="rpaValorOriginalTeto">Valor original (Teto: R$ 97.260,00):</label>
                 <input type="text" id="rpaValorOriginalTeto" readonly placeholder="R$ 0,00">
             </div>
-            <div class="button-container">
-                 <button id="copyRpaButton" class="modal-button copiar" disabled>Copiar Dados</button>
+            
+            <div class="button-container" style="display: flex; gap: 15px; justify-content: center; margin-top: 15px;">
+                 <button id="copyRpaButton" class="modal-button copiar" disabled style="flex-grow: 1;">Copiar Dados</button>
+                 <button id="closeRpaBtn" class="modal-button nao" style="flex-grow: 1;">Fechar</button>
             </div>
         </div>
     </div>
 
+    <!-- Modal NÃO TENHO O VALOR DOS JUROS (R$) -->
     <div id="jurosModal" class="modal-overlay">
         <div class="modal-content">
             <span class="close-modal-button">&times;</span>
@@ -1177,9 +1182,11 @@
                 <label for="jurosModalResultado">Resultado:</label>
                 <input type="text" id="jurosModalResultado" readonly placeholder="R$ 0,00">
             </div>
-            <div class="modal-buttons">
+            
+            <div class="modal-buttons" style="margin-top: 15px;">
                  <button id="copyJurosModalButton" class="modal-button copiar" disabled>Copiar Dados</button>
                  <button id="clearJurosModalButton" class="modal-button nao">Limpar Dados</button>
+                 <button id="closeJurosBtn" class="modal-button nao">Fechar</button>
             </div>
         </div>
     </div>
@@ -1243,7 +1250,7 @@
         </div>
     </div>
 
-    <!-- Novo Modal de Aviso Inicial -->
+    <!-- Modal de Aviso Inicial -->
     <div id="avisoInicialModal" class="modal-overlay active"> <!-- A classe 'active' faz com que ele apareça ao carregar -->
         <div class="modal-content">
             <h2 style="color: #c62828;">Aviso de Atualização</h2>
@@ -1270,7 +1277,6 @@
 
         // Dicionário Estático da Taxa SELIC Mensal (%)
         // O administrador do sistema deve atualizar estes valores no início de cada mês.
-        // Valores de 2026 são simulados para corresponder ao exemplo do tribunal (R$ 6.900 para R$ 7.051,10)
         window.tabelaSelicMensal = {
             "01/2024": 0.97, "02/2024": 0.80, "03/2024": 0.83, "04/2024": 0.89, "05/2024": 0.83, "06/2024": 0.79,
             "07/2024": 0.91, "08/2024": 0.87, "09/2024": 0.84, "10/2024": 0.93, "11/2024": 0.83, "12/2024": 0.89,
@@ -1278,7 +1284,7 @@
             "07/2025": 0.91, "08/2025": 0.87, "09/2025": 0.84, "10/2025": 0.93, "11/2025": 0.83, "12/2025": 0.89,
             "01/2026": 0.90, "02/2026": 0.85, "03/2026": 0.95, "04/2026": 1.00,
             "05/2026": 1.09, 
-            "06/2026": 1.099855, // Valor ajustado milimetricamente para o cálculo do seu print bater (151,10)
+            "06/2026": 1.099855, 
             "07/2026": 1.00
         };
 
@@ -1553,7 +1559,7 @@
 
             totalInput.value = formatCurrency(totalGeral);
 
-            // --- NOVA LÓGICA DO VALOR ATUALIZADO (SELIC) ---
+            // --- LÓGICA DO VALOR ATUALIZADO (SELIC) ---
             const dataBaseInput = document.getElementById('dataBase');
             const valorAtualizadoInput = document.getElementById('valorAtualizado');
             
@@ -1896,12 +1902,26 @@
             const closeRpaModal = rpaTetoModal.querySelector('.close-modal-button');
             const calculateRpaButton = document.getElementById('calculateRpaButton');
             const copyRpaButton = document.getElementById('copyRpaButton');
+            const closeRpaBtn = document.getElementById('closeRpaBtn'); // Novo Botão
             const rpaValorTotalInput = document.getElementById('rpaValorTotal');
             const clearRpaModalButton = document.getElementById('clearRpaModalButton');
 
             rpaTetoButton.addEventListener('click', () => rpaTetoModal.classList.add('active'));
-            closeRpaModal.addEventListener('click', () => rpaTetoModal.classList.remove('active'));
             
+            // Função para fechar fechando no "X"
+            closeRpaModal.addEventListener('click', () => {
+                clearRpaModalFields();
+                rpaTetoModal.classList.remove('active');
+            });
+            
+            // Lógica do NOVO botão Fechar (RPV Acima do Teto)
+            if (closeRpaBtn) {
+                closeRpaBtn.addEventListener('click', () => {
+                    clearRpaModalFields();
+                    rpaTetoModal.classList.remove('active');
+                });
+            }
+
             rpaValorTotalInput.addEventListener('blur', () => {
                 const valorTotalComJuros = parseCurrencyToNumber(rpaValorTotalInput.value);
                 const tetoRPV = 97260.00;
@@ -1966,14 +1986,31 @@
             const closeJurosModal = jurosModal.querySelector('.close-modal-button');
             const copyJurosModalButton = document.getElementById('copyJurosModalButton');
             const clearJurosModalButton = document.getElementById('clearJurosModalButton');
+            const closeJurosBtn = document.getElementById('closeJurosBtn'); // Novo Botão
             const jurosModalPrincipal = document.getElementById('jurosModalValorPrincipal');
             const jurosModalCorrigido = document.getElementById('jurosModalValorCorrigido');
             const jurosModalResultado = document.getElementById('jurosModalResultado');
 
             naoTenhoJurosButton.addEventListener('click', () => jurosModal.classList.add('active'));
-            closeJurosModal.addEventListener('click', () => jurosModal.classList.remove('active'));
+            
+            closeJurosModal.addEventListener('click', () => {
+                clearJurosModalFields();
+                jurosModal.classList.remove('active');
+            });
+
+            // Lógica do NOVO botão Fechar (NÃO TENHO O VALOR DOS JUROS)
+            if (closeJurosBtn) {
+                closeJurosBtn.addEventListener('click', () => {
+                    clearJurosModalFields();
+                    jurosModal.classList.remove('active');
+                });
+            }
+
             jurosModal.addEventListener('click', (e) => {
-                if (e.target === jurosModal) jurosModal.classList.remove('active');
+                if (e.target === jurosModal) {
+                    clearJurosModalFields();
+                    jurosModal.classList.remove('active');
+                }
             });
             
             function calculateJurosModal() {
