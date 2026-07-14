@@ -91,7 +91,7 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
 
-        .left-column-wrapper, .form-section, .results-section {
+        .left-column-wrapper, .form-section, .results-section, .links-section {
             flex: 1 1 280px;
             min-width: 260px;
             padding: 10px; 
@@ -130,10 +130,19 @@
             max-width: 420px;
             padding-top: 10px;
         }
+        
         .results-section {
             border-left: 1px solid #eee;
             min-height: 150px;
             padding-top: 10px;
+            max-width: 320px; /* Largura reduzida para acomodar a coluna de links */
+        }
+
+        .links-section {
+            border-left: 1px solid #eee;
+            min-height: 150px;
+            padding-top: 10px;
+            max-width: 250px; /* Largura ideal para os botões de links */
         }
 
         .section-main-title {
@@ -151,14 +160,18 @@
             margin-top: 0.5em;
         }
         
-        .results-section h3 {
+        .results-section h3, .links-section h3 {
             font-size: 1.1em;
             font-weight: bold;
-            color: red;
+            color: #000080;
             margin-top: 1.5em; 
             margin-bottom: 0.8em;
             text-align: center;
             width: 100%;
+        }
+
+        .results-section h3:first-of-type {
+            margin-top: 0.5em;
         }
         
         .results-field-group {
@@ -273,18 +286,27 @@
         }
 
         .author-count-group {
-            text-align: center;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center; /* Alterado para center */
+            gap: 10px;
             font-size: 0.9em;
+            margin-bottom: 1em;
         }
         .author-count-group label {
             color: #006400;
             font-weight: bold;
+            width: auto;
+            margin-bottom: 0;
         }
         .author-count-group select {
             color: #006400;
             font-weight: bold;
+            width: auto;
             max-width: 80px;
-            margin: 0 auto;
+            margin: 0;
+            padding: 0.4em;
         }
 
         /* Estilos para as opções SIREA / ORACLE */
@@ -344,8 +366,8 @@
             margin-bottom: 1.5em;
         }
 
-        /* Override específico para o botão de apagar na seção de formulário */
-        .form-section .button-container {
+        /* Override específico para o botão de apagar na seção de formulário e links */
+        .form-section .button-container, .links-section .button-container {
             display: flex;
             justify-content: center;
         }
@@ -397,7 +419,7 @@
                 1px 1px 2px rgba(0,0,0,0.3);
         }
 
-        /* Estilo Yellow Badge para ORACLE / SIREA e Tabelas Iniciais no modal */
+        /* Estilo Yellow Badge para ORACLE / SIREA, Tabelas Iniciais no modal e botão Limpar */
         .badge-yellow {
             background-color: #FFD700; /* Amarelo */
             color: #000080; /* Azul Marinho */
@@ -416,6 +438,20 @@
             align-items: center;
             width: 110px; /* LARGURA FIXA PARA ALINHAMENTO PERFEITO */
             box-sizing: border-box;
+            cursor: pointer;
+            transition: all 0.1s ease-in-out;
+        }
+
+        .badge-yellow:hover:not(:disabled) {
+            filter: brightness(105%);
+            transform: translateY(-1px);
+        }
+
+        .badge-yellow:active:not(:disabled) {
+            transform: translateY(2px);
+            box-shadow: 
+                inset 0px 1px 2px rgba(0,0,0,0.3),
+                1px 1px 2px rgba(0,0,0,0.3);
         }
 
         /* Estilo Blue Badge para o RRA no modal e aba inicial */
@@ -742,7 +778,7 @@
                 padding: 10px;
                 gap: 20px;
             }
-            .left-column-wrapper, .form-section, .results-section {
+            .left-column-wrapper, .form-section, .results-section, .links-section {
                 max-width: 100%;
                 padding: 0;
                 border: none;
@@ -753,7 +789,7 @@
                 flex-direction: column;
                 align-items: center;
             }
-            .results-section {
+            .results-section, .links-section {
                 border-bottom: none;
             }
             .info-box {
@@ -795,7 +831,7 @@
                 grid-template-columns: 1fr;
                 gap: 10px;
             }
-            .left-column-wrapper, .form-section, .results-section {
+            .left-column-wrapper, .form-section, .results-section, .links-section {
                 background-color: #fff;
                 padding: 15px;
                 border-radius: 8px;
@@ -886,10 +922,7 @@
         </div>
 
         <div class="form-section">
-            <div class="button-container">
-                 <button id="clearButton" class="action-button">LIMPAR DADOS</button>
-            </div>
-            <h3 class="section-main-title">DADOS INICIAIS</h3>
+            <h3 class="section-main-title">INSIRA OS VALORES ABAIXO:</h3>
             <form>
                 <div class="form-group">
                     <label for="valorPrincipal">Valor Principal:</label>
@@ -915,15 +948,14 @@
                         <input type="text" id="total" name="total" placeholder="R$ 0,00" readonly>
                     </div>
                 </div>
-                <div class="double-field-row">
-                    <div class="form-group">
-                        <label for="dataBase">Data-Base (mês/ano):</label>
-                        <input type="text" id="dataBase" name="dataBase" placeholder="MM/AAAA" maxlength="7">
-                    </div>
-                    <div class="form-group">
-                        <label for="valorAtualizado" style="color: #006400;">Valor atualizado (Estimativa):</label>
-                        <input type="text" id="valorAtualizado" name="valorAtualizado" placeholder="R$ 0,00" readonly style="background-color: #e8f5e9; border-color: #4caf50; color: #006400;">
-                    </div>
+                
+                <div class="form-group rra-inline-group" style="margin-top: 15px; margin-bottom: 15px;">
+                    <label for="sucumbenciaPerc">Sucumbência (Perc. %):</label>
+                    <input type="text" id="sucumbenciaPerc" name="sucumbenciaPerc" placeholder="0%" inputmode="numeric">
+                </div>
+
+                <div class="button-container" style="margin-top: 15px;">
+                     <button type="button" id="clearButton" class="badge-yellow" style="width: 100%; border: none; padding: 12px 10px; text-transform: uppercase;">LIMPAR DADOS</button>
                 </div>
 
                 <div class="rra-options" style="margin-top: 25px;">
@@ -1017,7 +1049,21 @@
                 <label for="totalAdvogado">Total (adv):</label>
                 <input type="text" id="totalAdvogado" name="totalAdvogado" placeholder="R$ 0,00" readonly>
             </div>
+            <div class="results-field-group" style="margin-top: 15px;">
+                <label for="valorSucumbencia">Valor Sucumbência (R$):</label>
+                <input type="text" id="valorSucumbencia" name="valorSucumbencia" placeholder="R$ 0,00" readonly>
+            </div>
         </div>
+
+        <!-- NOVA COLUNA: LINKS ÚTEIS (Alinhada horizontalmente com o botão LIMPAR DADOS) -->
+        <div class="links-section">
+            <h3 class="action-button" style="margin-top: 1.5em; margin-bottom: 0.8em; font-size: 0.85em; text-transform: none; color: #000080; min-height: auto; padding: 12px 10px; cursor: default;">Links úteis</h3>
+            <div class="useful-links-container" style="gap: 8px;">
+                <a href="https://fabrica-de-calculos.app.trf3.jus.br/atrasados/" target="_blank" style="color: #000080; text-decoration: none; font-size: 0.9em; padding: 4px 8px; border-radius: 4px; transition: background-color 0.2s;">Fábrica de cálculos</a>
+                <!-- Para adicionar novos links no futuro, basta copiar a linha acima e alterar o texto e o link -->
+            </div>
+        </div>
+
     </div>
     
     <div id="confirmationModal" class="modal-overlay">
@@ -1250,19 +1296,6 @@
         </div>
     </div>
 
-    <!-- Modal de Aviso Inicial -->
-    <div id="avisoInicialModal" class="modal-overlay active"> <!-- A classe 'active' faz com que ele apareça ao carregar -->
-        <div class="modal-content">
-            <h2 style="color: #c62828;">Aviso de Atualização</h2>
-            <p style="text-align: justify; font-size: 1.1em; line-height: 1.5; color: #333;">
-                O campo <strong>"Valor atualizado (Estimativa):"</strong> está em fase de implementação pelo desenvolvedor. O código está sendo atualizado com os índices de correção para que o valor estimado seja calculado corretamente.
-            </p>
-            <div class="modal-buttons" style="margin-top: 25px;">
-                <button id="fecharAvisoInicial" class="modal-button copiar">FECHAR</button>
-            </div>
-        </div>
-    </div>
-    
     <div id="warningModal" class="modal-overlay">
         <div class="modal-content">
             <p id="warningMessage"></p>
@@ -1274,50 +1307,6 @@
         let isDetalhamentoClosedByUser = false; 
         
         window.currentModalRRAData = null;
-
-        // Dicionário Estático da Taxa SELIC Mensal (%)
-        // O administrador do sistema deve atualizar estes valores no início de cada mês.
-        window.tabelaSelicMensal = {
-            "01/2024": 0.97, "02/2024": 0.80, "03/2024": 0.83, "04/2024": 0.89, "05/2024": 0.83, "06/2024": 0.79,
-            "07/2024": 0.91, "08/2024": 0.87, "09/2024": 0.84, "10/2024": 0.93, "11/2024": 0.83, "12/2024": 0.89,
-            "01/2025": 0.97, "02/2025": 0.80, "03/2025": 0.83, "04/2025": 0.89, "05/2025": 0.83, "06/2025": 0.79,
-            "07/2025": 0.91, "08/2025": 0.87, "09/2025": 0.84, "10/2025": 0.93, "11/2025": 0.83, "12/2025": 0.89,
-            "01/2026": 0.90, "02/2026": 0.85, "03/2026": 0.95, "04/2026": 1.00,
-            "05/2026": 1.09, 
-            "06/2026": 1.099855, 
-            "07/2026": 1.00
-        };
-
-        window.calcularFatorAcumuladoSelic = function(dataBaseStr) {
-            if(!dataBaseStr || dataBaseStr.length !== 7) return 0;
-            
-            const [mesBaseStr, anoBaseStr] = dataBaseStr.split('/');
-            let mesCorrente = parseInt(mesBaseStr, 10);
-            let anoCorrente = parseInt(anoBaseStr, 10);
-            
-            if(isNaN(mesCorrente) || isNaN(anoCorrente)) return 0;
-            
-            const dataAtual = new Date();
-            const mesAtual = dataAtual.getMonth() + 1;
-            const anoAtual = dataAtual.getFullYear();
-            
-            let fatorAcumulado = 0;
-            let interacoes = 0;
-            
-            // Segundo a EC 113/2021, o índice acumula da data-base até o mês ANTERIOR ao do cálculo (ou efetivo pagamento)
-            while ((anoCorrente < anoAtual || (anoCorrente === anoAtual && mesCorrente < mesAtual)) && interacoes < 200) {
-                const chaveData = `${String(mesCorrente).padStart(2, '0')}/${anoCorrente}`;
-                fatorAcumulado += window.tabelaSelicMensal[chaveData] || 0; // Soma simples
-                
-                mesCorrente++;
-                if (mesCorrente > 12) {
-                    mesCorrente = 1;
-                    anoCorrente++;
-                }
-                interacoes++;
-            }
-            return fatorAcumulado;
-        };
 
         window.formatDecimalInput = function(input) {
             let value = input.value.replace(/[^0-9,]/g, '');
@@ -1477,6 +1466,7 @@
             const valorSelicInput = document.getElementById('valorSelic'); 
             const totalInput = document.getElementById('total');
             const percentualAdvogadoStr = document.getElementById('percentualAdvogado').value;
+            const sucumbenciaPercStr = document.getElementById('sucumbenciaPerc').value;
             const valorPrincipalAdvogadoInput = document.getElementById('valorPrincipalAdvogado');
             const jurosAdvogadoInput = document.getElementById('jurosAdvogado');
             const selicAdvogadoInput = document.getElementById('selicAdvogado'); 
@@ -1492,6 +1482,7 @@
             const valorJuros = parseCurrencyToNumber(valorJurosInput.value);
             const valorSelic = parseCurrencyToNumber(valorSelicInput.value); 
             const percentualAdvogado = parseFloat(percentualAdvogadoStr.replace('%', '').replace(',', '.')) / 100 || 0;
+            const sucumbenciaPerc = parseFloat(sucumbenciaPercStr.replace('%', '').replace(',', '.')) / 100 || 0;
             const numAutores = parseInt(numAutoresSelect.value) || 1;
 
             const totalGeral = valorPrincipal + valorJuros + valorSelic; 
@@ -1558,24 +1549,9 @@
             }
 
             totalInput.value = formatCurrency(totalGeral);
-
-            // --- LÓGICA DO VALOR ATUALIZADO (SELIC) ---
-            const dataBaseInput = document.getElementById('dataBase');
-            const valorAtualizadoInput = document.getElementById('valorAtualizado');
             
-            if (dataBaseInput && valorAtualizadoInput) {
-                let totalAtualizado = totalGeral;
-                
-                if (dataBaseInput.value.length === 7 && totalGeral > 0) {
-                    const fatorAcumulado = window.calcularFatorAcumuladoSelic(dataBaseInput.value);
-                    const valorAtualizacao = totalGeral * (fatorAcumulado / 100);
-                    
-                    // Adiciona o valor de atualização ao total geral
-                    totalAtualizado = totalGeral + valorAtualizacao; 
-                }
-                
-                valorAtualizadoInput.value = formatCurrency(totalAtualizado);
-            }
+            const valorSucumbencia = totalGeral * sucumbenciaPerc;
+            document.getElementById('valorSucumbencia').value = formatCurrency(valorSucumbencia);
         }
 
         function generateDetalhamentoTable(numAutores, vpAutorTotal, jAutorTotal, selicAutorTotal, vpAdvTotal, jAdvTotal, selicAdvTotal) {
@@ -1789,8 +1765,7 @@
             document.getElementById('valorJuros').value = '';
             document.getElementById('valorSelic').value = ''; 
             document.getElementById('percentualAdvogado').value = '';
-            document.getElementById('dataBase').value = '';
-            document.getElementById('valorAtualizado').value = '';
+            document.getElementById('sucumbenciaPerc').value = '';
             document.getElementById('parcelasExercicioAnterior').value = '';
             document.getElementById('parcelasExercicioAtual').value = '';
             document.getElementById('valorTotalAnterior').value = '';
@@ -1851,16 +1826,6 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             runCalculations(); 
-            
-            // Lógica do Modal de Aviso Inicial
-            const avisoInicialModal = document.getElementById('avisoInicialModal');
-            const fecharAvisoInicialBtn = document.getElementById('fecharAvisoInicial');
-
-            if (avisoInicialModal && fecharAvisoInicialBtn) {
-                fecharAvisoInicialBtn.addEventListener('click', () => {
-                    avisoInicialModal.classList.remove('active');
-                });
-            }
             
             const detalhamentoModal = document.getElementById('detalhamentoModal');
             const detalhamentoModalContent = detalhamentoModal.querySelector('.modal-content');
@@ -2114,33 +2079,8 @@
             document.getElementById('rpaValorTotal').addEventListener('input', function() { formatInputCurrency(this); });
             document.getElementById('rpaValorJuros').addEventListener('input', function() { formatInputCurrency(this); });
             
-            // Mascara e logica para o novo input Data-Base
-            const dataBaseInput = document.getElementById('dataBase');
-            if (dataBaseInput) {
-                dataBaseInput.addEventListener('input', function() {
-                    let value = this.value.replace(/\D/g, '');
-                    if (value.length >= 2) {
-                        let mes = parseInt(value.substring(0, 2), 10);
-                        if (mes > 12) value = '12' + value.substring(2);
-                        if (mes === 0 && value.length >= 2) value = '01' + value.substring(2);
-                    }
-                    if (value.length > 2) {
-                        value = value.substring(0, 2) + '/' + value.substring(2, 6);
-                    }
-                    this.value = value;
-                    
-                    if(this.value.length === 7 || this.value.length === 0) {
-                         runCalculations();
-                    }
-                });
-                
-                dataBaseInput.addEventListener('blur', function() {
-                     runCalculations();
-                });
-            }
-            
             document.querySelectorAll('input[type="text"]').forEach(input => {
-                if (input.id === 'calculatorDisplay' || input.id === 'dataBase') return; 
+                if (input.id === 'calculatorDisplay') return; 
                 input.addEventListener('mousedown', (event) => {
                     const field = event.target;
                     let valueToCopy = field.value;
@@ -2191,6 +2131,11 @@
             });
 
             document.getElementById('percentualAdvogado').addEventListener('input', function() {
+                formatPercentage(this);
+                runCalculations();
+            });
+            
+            document.getElementById('sucumbenciaPerc').addEventListener('input', function() {
                 formatPercentage(this);
                 runCalculations();
             });
@@ -2399,7 +2344,7 @@
 
                 if (firstOperand !== null && (operator === '*' || operator === '/')) {
                      const percentValue = (firstOperand * currentValue) / 100;
-                     calculator.displayValue = String(parseFloat(percentValue.toFixed(2)));
+                     calculator.displayValue = String(parseFloat(percentual.toFixed(2)));
                 } else if (firstOperand !== null && (operator === '+' || operator === '-')) {
                     const percentValue = (firstOperand * currentValue) / 100;
                     calculator.displayValue = String(parseFloat(percentValue.toFixed(2)));
@@ -2459,9 +2404,9 @@
         });
 
         document.getElementById('total').setAttribute('readonly', 'readonly');
-        document.getElementById('valorAtualizado').setAttribute('readonly', 'readonly');
         document.getElementById('valorTotalAnterior').setAttribute('readonly', 'readonly');
         document.getElementById('valorTotalAtual').setAttribute('readonly', 'readonly');
+        document.getElementById('valorSucumbencia').setAttribute('readonly', 'readonly');
     </script>
 </body>
 </html>
