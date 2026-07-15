@@ -289,7 +289,7 @@
             display: flex;
             flex-direction: row;
             align-items: center;
-            justify-content: center; /* Alterado para center */
+            justify-content: center;
             gap: 10px;
             font-size: 0.9em;
             margin-bottom: 1em;
@@ -729,8 +729,8 @@
             box-shadow: inset 2px 2px 5px #bebebe, inset -2px -2px 5px #ffffff;
         }
         .calculator-keys .operator {
-            background-color: #f9a825;
-            color: white;
+            background-color: #e0e0e0;
+            color: black;
             box-shadow: 3px 3px 6px rgba(0,0,0,0.2);
         }
         .calculator-keys .equal-sign {
@@ -1058,8 +1058,9 @@
         <!-- NOVA COLUNA: LINKS ÚTEIS (Alinhada horizontalmente com o botão LIMPAR DADOS) -->
         <div class="links-section">
             <h3 class="action-button" style="margin-top: 1.5em; margin-bottom: 0.8em; font-size: 0.85em; text-transform: none; color: #000080; min-height: auto; padding: 12px 10px; cursor: default;">Links úteis</h3>
-            <div class="useful-links-container" style="gap: 8px;">
-                <a href="https://fabrica-de-calculos.app.trf3.jus.br/atrasados/" target="_blank" style="color: #000080; text-decoration: none; font-size: 0.9em; padding: 4px 8px; border-radius: 4px; transition: background-color 0.2s;">Fábrica de cálculos</a>
+            <div class="useful-links-container" style="margin-top: 2.5em; display: flex; flex-direction: column; gap: 15px; text-align: center;">
+                <a href="https://fabrica-de-calculos.app.trf3.jus.br/atrasados/" target="_blank" style="color: #000080; text-decoration: none; font-size: 1.15em; padding: 4px 8px; border-radius: 4px; transition: all 0.2s;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Fábrica de Cálculos TRF 3ª Região</a>
+                <a href="https://www.jfrs.jus.br/contafacilprev/" target="_blank" style="color: #000080; text-decoration: none; font-size: 1.15em; padding: 4px 8px; border-radius: 4px; transition: all 0.2s;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Conta Fácil TRF 4ª Região</a>
                 <!-- Para adicionar novos links no futuro, basta copiar a linha acima e alterar o texto e o link -->
             </div>
         </div>
@@ -2344,7 +2345,7 @@
 
                 if (firstOperand !== null && (operator === '*' || operator === '/')) {
                      const percentValue = (firstOperand * currentValue) / 100;
-                     calculator.displayValue = String(parseFloat(percentual.toFixed(2)));
+                     calculator.displayValue = String(parseFloat(percentValue.toFixed(2)));
                 } else if (firstOperand !== null && (operator === '+' || operator === '-')) {
                     const percentValue = (firstOperand * currentValue) / 100;
                     calculator.displayValue = String(parseFloat(percentValue.toFixed(2)));
