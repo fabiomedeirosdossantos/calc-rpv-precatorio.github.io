@@ -1059,8 +1059,8 @@
         <div class="links-section">
             <h3 class="action-button" style="margin-top: 1.5em; margin-bottom: 0.8em; font-size: 0.85em; text-transform: none; color: #000080; min-height: auto; padding: 12px 10px; cursor: default;">Links úteis</h3>
             <div class="useful-links-container" style="margin-top: 2.5em; display: flex; flex-direction: column; gap: 15px; text-align: center;">
-                <a href="https://fabrica-de-calculos.app.trf3.jus.br/atrasados/" target="_blank" style="color: #000080; text-decoration: none; font-size: 1.15em; padding: 4px 8px; border-radius: 4px; transition: all 0.2s;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Fábrica de Cálculos TRF 3ª Região</a>
-                <a href="https://www.jfrs.jus.br/contafacilprev/" target="_blank" style="color: #000080; text-decoration: none; font-size: 1.15em; padding: 4px 8px; border-radius: 4px; transition: all 0.2s;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Conta Fácil TRF 4ª Região</a>
+                <a href="https://fabrica-de-calculos.app.trf3.jus.br/atrasados/" target="_blank" style="color: #000080; text-decoration: none; font-size: 1.15em; padding: 4px 8px; border-radius: 4px; transition: all 0.2s;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">fábrica de cálculos</a>
+                <a href="https://www.jfrs.jus.br/contafacilprev/" target="_blank" style="color: #000080; text-decoration: none; font-size: 1.15em; padding: 4px 8px; border-radius: 4px; transition: all 0.2s;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">conta fácil trf4</a>
                 <!-- Para adicionar novos links no futuro, basta copiar a linha acima e alterar o texto e o link -->
             </div>
         </div>
@@ -1422,7 +1422,7 @@
         }
         
         function formatPercentageOutput(numberValue) {
-             if (isNaN(numberValue)) return '0,00%';
+             if (isNaN(numberValue) || numberValue === 0) return '';
              return numberValue.toFixed(2).replace('.', ',') + '%';
         }
         
@@ -1498,15 +1498,15 @@
             const selicAutorBase = valorSelic - selicAdvogadoBase; 
             const totalAutorBase = vpAutorBase + jAutorBase + selicAutorBase;
             
-            valorPrincipalAdvogadoInput.value = formatCurrency(vpAdvogadoBase);
-            jurosAdvogadoInput.value = formatCurrency(jAdvogadoBase);
-            selicAdvogadoInput.value = formatCurrency(selicAdvogadoBase);
-            totalAdvogadoInput.value = formatCurrency(totalAdvogadoBase);
+            valorPrincipalAdvogadoInput.value = vpAdvogadoBase === 0 ? '' : formatCurrency(vpAdvogadoBase);
+            jurosAdvogadoInput.value = jAdvogadoBase === 0 ? '' : formatCurrency(jAdvogadoBase);
+            selicAdvogadoInput.value = selicAdvogadoBase === 0 ? '' : formatCurrency(selicAdvogadoBase);
+            totalAdvogadoInput.value = totalAdvogadoBase === 0 ? '' : formatCurrency(totalAdvogadoBase);
 
-            valorPrincipalAutorInput.value = formatCurrency(vpAutorBase);
-            jurosAutorInput.value = formatCurrency(jAutorBase);
-            selicAutorInput.value = formatCurrency(selicAutorBase);
-            totalAutorInput.value = formatCurrency(totalAutorBase);
+            valorPrincipalAutorInput.value = vpAutorBase === 0 ? '' : formatCurrency(vpAutorBase);
+            jurosAutorInput.value = jAutorBase === 0 ? '' : formatCurrency(jAutorBase);
+            selicAutorInput.value = selicAutorBase === 0 ? '' : formatCurrency(selicAutorBase);
+            totalAutorInput.value = totalAutorBase === 0 ? '' : formatCurrency(totalAutorBase);
 
             if (numAutores > 1) {
                 generateDetalhamentoTable(numAutores, vpAutorBase, jAutorBase, selicAutorBase, vpAdvogadoBase, jAdvogadoBase, selicAdvogadoBase);
@@ -1542,17 +1542,17 @@
                     resultadoAtualFinal = baseRRA - resultadoAnteriorFinal;
                 }
                 
-                document.getElementById('valorTotalAnterior').value = formatCurrency(resultadoAnteriorFinal);
-                document.getElementById('valorTotalAtual').value = formatCurrency(resultadoAtualFinal);
+                document.getElementById('valorTotalAnterior').value = resultadoAnteriorFinal === 0 ? '' : formatCurrency(resultadoAnteriorFinal);
+                document.getElementById('valorTotalAtual').value = resultadoAtualFinal === 0 ? '' : formatCurrency(resultadoAtualFinal);
             } else {
-                 document.getElementById('valorTotalAnterior').value = formatCurrency(0);
-                 document.getElementById('valorTotalAtual').value = formatCurrency(0);
+                 document.getElementById('valorTotalAnterior').value = '';
+                 document.getElementById('valorTotalAtual').value = '';
             }
 
-            totalInput.value = formatCurrency(totalGeral);
+            totalInput.value = totalGeral === 0 ? '' : formatCurrency(totalGeral);
             
             const valorSucumbencia = totalGeral * sucumbenciaPerc;
-            document.getElementById('valorSucumbencia').value = formatCurrency(valorSucumbencia);
+            document.getElementById('valorSucumbencia').value = valorSucumbencia === 0 ? '' : formatCurrency(valorSucumbencia);
         }
 
         function generateDetalhamentoTable(numAutores, vpAutorTotal, jAutorTotal, selicAutorTotal, vpAdvTotal, jAdvTotal, selicAdvTotal) {
@@ -1917,9 +1917,9 @@
                 const jurosSobreTeto = tetoRPV * (percentualJuros / 100);
                 const valorOriginalTeto = tetoRPV - jurosSobreTeto;
 
-                document.getElementById('rpaPercentualJuros').value = formatPercentageOutput(percentualJuros);
-                document.getElementById('rpaJurosTeto').value = formatCurrency(jurosSobreTeto);
-                document.getElementById('rpaValorOriginalTeto').value = formatCurrency(valorOriginalTeto);
+                document.getElementById('rpaPercentualJuros').value = percentualJuros === 0 ? '' : formatPercentageOutput(percentualJuros);
+                document.getElementById('rpaJurosTeto').value = jurosSobreTeto === 0 ? '' : formatCurrency(jurosSobreTeto);
+                document.getElementById('rpaValorOriginalTeto').value = valorOriginalTeto === 0 ? '' : formatCurrency(valorOriginalTeto);
                 
                 copyRpaButton.disabled = false;
             });
@@ -1983,7 +1983,7 @@
                 const principal = parseCurrencyToNumber(jurosModalPrincipal.value);
                 const corrigido = parseCurrencyToNumber(jurosModalCorrigido.value);
                 const resultado = corrigido - principal;
-                jurosModalResultado.value = formatCurrency(resultado);
+                jurosModalResultado.value = resultado === 0 ? '' : formatCurrency(resultado);
                 copyJurosModalButton.disabled = resultado <= 0;
             }
 
@@ -2052,11 +2052,11 @@
                 const desagioPrincipal = truncateToTwoDecimals(principal * percentual);
                 const desagioJuros = truncateToTwoDecimals(juros * percentual);
 
-                desagioResultadoPrincipalInput.value = formatCurrency(principalAposDesagio);
-                desagioResultadoJurosInput.value = formatCurrency(jurosAposDesagio);
-                desagioResultadoTotalInput.value = formatCurrency(totalAposDesagio);
-                desagioValorPrincipalCalculadoInput.value = formatCurrency(desagioPrincipal);
-                desagioValorJurosCalculadoInput.value = formatCurrency(desagioJuros);
+                desagioResultadoPrincipalInput.value = principalAposDesagio === 0 ? '' : formatCurrency(principalAposDesagio);
+                desagioResultadoJurosInput.value = jurosAposDesagio === 0 ? '' : formatCurrency(jurosAposDesagio);
+                desagioResultadoTotalInput.value = totalAposDesagio === 0 ? '' : formatCurrency(totalAposDesagio);
+                desagioValorPrincipalCalculadoInput.value = desagioPrincipal === 0 ? '' : formatCurrency(desagioPrincipal);
+                desagioValorJurosCalculadoInput.value = desagioJuros === 0 ? '' : formatCurrency(desagioJuros);
 
                 if (principal > 0 || juros > 0) {
                     copyDesagioButton.disabled = false;
